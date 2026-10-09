@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>STARLYR — Turn Your Sound Into Your Lyrics</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#efe6d4;--bg2:#e6d9c0;--card:#f8f2e5;--ink:#2b1d0e;--mut:#7a6648;--gold:#a9741f;--gold2:#c99a3d;--dark:#2a1c0d;--line:#d6c6a4;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#efe6d4}}
+html{scroll-padding-top:env(safe-area-inset-top,0px);scroll-behavior:smooth}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 Inter,system-ui,sans-serif}
+h1,h2,h3,.logo{font-family:Fraunces,Georgia,serif;margin:0}
+a{color:inherit}button{font:inherit;cursor:pointer}
+.wrap{max-width:1120px;margin:0 auto;padding:0 18px}
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:rgba(239,230,212,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+nav .wrap{display:flex;align-items:center;justify-content:space-between;height:58px}
+.logo{font-size:24px;font-weight:800;letter-spacing:.08em}.logo b{color:var(--gold)}
+.btn{background:var(--gold);color:#fff8e8;border:0;border-radius:6px;padding:10px 18px;font-weight:600}
+.btn:hover{background:#8f6015}.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--ink)}
+.btn.sm{padding:6px 11px;font-size:13px}.btn.out{background:transparent;color:var(--gold);border:1px solid var(--gold)}
+.btn:disabled{opacity:.5;cursor:wait}
+.hero{background:linear-gradient(180deg,var(--dark),#43290f);color:#f3e6c8;padding:70px 0 60px}
+.hero h1{font-size:clamp(36px,7vw,68px);line-height:1.05;max-width:760px}.hero h1 em{color:var(--gold2);font-style:normal}
+.hero p{max-width:560px;color:#d8c59d;font-size:17px;margin:18px 0 26px}.hero .row{display:flex;gap:10px;flex-wrap:wrap}
+.hero .btn.ghost{color:#f3e6c8;border-color:#c99a3d}
+.bars{display:flex;align-items:flex-end;gap:3px;height:70px;margin-top:38px}.bars i{flex:1;background:var(--gold2);opacity:.75;border-radius:1px;max-width:8px}
+section.s{padding:60px 0}section.s.alt{background:var(--bg2)}
+.eyebrow{color:var(--gold);font-weight:600;font-size:12px;letter-spacing:.14em;text-transform:uppercase}
+h2{font-size:clamp(26px,4vw,38px);margin:6px 0 24px}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+.card{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:18px}
+.card h3{font-size:18px;margin-bottom:6px}.card p{margin:0;color:var(--mut)}
+.num{font-family:Fraunces;color:var(--gold);font-size:28px}
+.chips{display:flex;flex-wrap:wrap;gap:7px}.chip{border:1px solid var(--line);background:var(--card);border-radius:20px;padding:5px 13px;font-size:13px;color:var(--ink)}
+.chip.on{background:var(--gold);color:#fff8e8;border-color:var(--gold)}
+.price{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}.price .big{font-family:Fraunces;font-size:34px}
+.price li{margin:5px 0}details{border-bottom:1px solid var(--line);padding:12px 0}summary{cursor:pointer;font-weight:600}details p{color:var(--mut);margin:8px 0 0}
+footer{background:var(--dark);color:#d8c59d;text-align:center;padding:26px 0;font-size:14px}footer b{color:var(--gold2);letter-spacing:.1em}
+#app{display:none}.tabs{display:flex;gap:4px;overflow-x:auto;border-bottom:1px solid var(--line);margin:16px 0}
+.tab{background:none;border:0;padding:10px 14px;color:var(--mut);font-weight:600;border-bottom:2px solid transparent;white-space:nowrap}.tab.on{color:var(--gold);border-color:var(--gold)}
+.pane{display:none}.pane.on{display:block}
+.two{display:grid;gap:14px;grid-template-columns:1fr 1fr}@media(max-width:760px){.two,.edgrid{grid-template-columns:1fr!important}}
+.drop{border:2px dashed var(--gold2);border-radius:8px;padding:16px;background:var(--card)}
+.drop h3{font-size:17px}canvas{width:100%;height:70px;display:block;background:#ead9b5;border-radius:4px;margin:8px 0}
+label{display:block;font-weight:600;font-size:13px;margin:12px 0 4px}
+input[type=text],select,textarea{width:100%;background:#fffaf0;border:1px solid var(--line);border-radius:6px;padding:9px 10px;font:inherit;color:var(--ink)}
+textarea{min-height:70px;resize:vertical}input[type=range]{width:100%;accent-color:var(--gold)}
+.sl{display:grid;grid-template-columns:1fr 1fr;gap:0 16px}.sl label{display:flex;justify-content:space-between;margin-top:8px}
+.stat{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin-top:8px}.stat div{background:#fffaf0;border:1px solid var(--line);border-radius:6px;padding:8px}.stat small{color:var(--mut);display:block}.stat b{font-size:17px}
+.note{background:#f4e6bf;border-left:3px solid var(--gold);padding:8px 12px;font-size:13px;border-radius:4px;margin:10px 0}
+.edgrid{display:grid;grid-template-columns:1fr 280px;gap:14px}
+.sec{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:12px;margin-bottom:10px}.sec.lock{border-color:var(--gold);background:#f3e7c8}
+.sec header{display:flex;justify-content:space-between;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:6px}.sec h3{font-size:15px;letter-spacing:.06em;color:var(--gold)}
+.sec .acts{display:flex;gap:5px;flex-wrap:wrap}.sec textarea{min-height:110px;font-size:16px;line-height:1.7}
+.sug{font-size:13px;padding:9px 0;border-bottom:1px solid var(--line)}.sug .btn{margin-top:6px}
+.hook{white-space:pre-wrap;font-size:16px;margin:6px 0}.sc{display:flex;gap:8px;font-size:12px;color:var(--mut);flex-wrap:wrap}
+.pl{position:relative}.pl .mk{position:absolute;top:0;width:1px;height:70px;background:var(--gold);pointer-events:none}
+.lyr{font-size:19px;line-height:1.9;white-space:pre-wrap}.lyr .a{background:#f0d58f;border-radius:4px}
+.proj{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap}
+#toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--dark);color:#f3e6c8;padding:10px 16px;border-radius:6px;display:none;z-index:99;max-width:90%}
+.hero{background:radial-gradient(900px 340px at 80% -10%,rgba(201,154,61,.28),transparent),linear-gradient(180deg,var(--dark),#43290f)}
+.hero h1 em{background:linear-gradient(90deg,#f0cf85,#c99a3d,#a9741f);-webkit-background-clip:text;background-clip:text;color:transparent}
+.card{transition:transform .15s,box-shadow .15s}.card:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(90,60,15,.12)}
+.bars i{animation:bp 2.4s ease-in-out infinite alternate}@keyframes bp{to{transform:scaleY(.55)}}@media(prefers-reduced-motion:reduce){.bars i{animation:none}}
+.strip{background:var(--gold);color:#fff8e8;overflow:hidden;white-space:nowrap;font-weight:600;letter-spacing:.12em;font-size:13px;padding:9px 0}.strip div{display:inline-block;animation:mq 30s linear infinite}@keyframes mq{to{transform:translateX(-50%)}}
+.pill{background:var(--card);border:1px solid var(--gold);border-radius:20px;padding:4px 12px;font-weight:600;font-size:13px;margin-right:6px;cursor:pointer;color:var(--ink)}
+.modal{position:fixed;inset:0;background:rgba(30,18,5,.6);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}.modal .card{max-width:440px;width:100%;max-height:90vh;overflow:auto;background:var(--bg)}
+.bank{background:#fffaf0;border:1px solid var(--gold);border-radius:8px;padding:4px 14px;margin:12px 0}.br{display:grid;grid-template-columns:92px 1fr auto;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}.bl{color:var(--mut);font-size:12px;text-transform:uppercase;letter-spacing:.08em}.bv{font-weight:600;font-size:17px;letter-spacing:.04em;word-break:break-all;user-select:all;-webkit-user-select:all}
+</style></head><body>
+<nav><div class="wrap"><a class="logo" href="#" onclick="go('land');return false">STAR<b>LYR</b></a>
+<div style="display:flex;align-items:center"><span class="pill" id="crp" onclick="openBuy()">Credits: …</span><a class="btn ghost sm" href="#features" onclick="go('land')" style="text-decoration:none;margin-right:6px">Features</a><button class="btn sm" onclick="go('app')">Start Creating</button></div></div></nav>
+
+<div id="land">
+<div class="hero"><div class="wrap"><div class="eyebrow">AI songwriting studio</div>
+<h1>Turn Your Sound Into Your <em>Lyrics.</em></h1>
+<p>Upload your beat or vocal, describe your idea, and create lyrics built around your music.</p>
+<div class="row"><button class="btn" onclick="go('app')">Start Creating</button><a class="btn ghost" href="#features" style="text-decoration:none">Explore Features</a></div>
+<div class="bars" id="hb"></div></div></div>
+<div class="strip"><div id="mq"></div></div>
+
+<section class="s" id="features"><div class="wrap"><div class="eyebrow">How it works</div><h2>From beat to finished lyrics in five steps</h2>
+<div class="grid">
+<div class="card"><div class="num">01</div><h3>Upload Your Sound</h3><p>Drop an MP3, WAV, M4A or FLAC beat, a vocal, or both. Duration, tempo estimate, energy and waveform are read in your browser.</p></div>
+<div class="card"><div class="num">02</div><h3>Generate Lyrics</h3><p>Pick mood, genre and language. Lyrics are written to the tempo and length of your track, built to be sung.</p></div>
+<div class="card"><div class="num">03</div><h3>Rewrite &amp; Refine</h3><p>Regenerate, rewrite, shorten, rhyme or improve any section. Lock the lines you love.</p></div>
+<div class="card"><div class="num">04</div><h3>Play Along</h3><p>Play the beat with a waveform, speed control and section markers while you read.</p></div>
+<div class="card"><div class="num">05</div><h3>Export Your Song</h3><p>Copy lyrics, download TXT, or save the whole project with its version history.</p></div></div></div></section>
+
+<section class="s alt"><div class="wrap"><div class="eyebrow">Built for African music</div><h2>Supported genres &amp; languages</h2>
+<div class="chips" id="gl"></div><p style="color:var(--mut);margin-top:16px">English, Nigerian Pidgin, Yoruba, Igbo, Hausa — and natural mixes like English + Pidgin or Pidgin + Yoruba, written the way people actually talk.</p></div></section>
+
+<section class="s"><div class="wrap"><div class="eyebrow">Pricing</div><h2>Simple plans</h2>
+<div class="price"><div class="card"><h3>Free</h3><div class="big">$0</div><ul><li><b>50 free starter credits</b> on signup</li><li>3 credits per full lyric, 1 per section edit, hook or title</li><li>Beat-aware &amp; vocal-aware modes</li></ul></div>
+<div class="card" style="border-color:var(--gold)"><h3>Top-up credits</h3><div class="big">₦300 <small style="font-size:15px">/ 100 credits</small></div><ul><li>Pay by bank transfer</li><li>Buy in packs of 100</li><li>Credits never expire</li></ul><button class="btn" style="margin-top:10px" onclick="go('app');openBuy()">Buy credits</button></div></div>
+<div class="note">Payments are manual bank transfers confirmed by the owner, then credits are added to your balance. Automatic card payments need a payment provider such as Paystack and are not part of this build.</div></div></section>
+
+<section class="s alt"><div class="wrap"><div class="eyebrow">FAQ</div><h2>Questions</h2>
+<details><summary>Does it really analyze my audio?</summary><p>Yes, in your browser: duration, a tempo estimate from the beat's pulse, energy level and the waveform. Key and section detection need a server-side audio service, so they are marked as unavailable rather than guessed.</p></details>
+<details><summary>Is my audio uploaded anywhere?</summary><p>No. Files are decoded locally and never leave your device in this build.</p></details>
+<details><summary>Can it write in Yoruba, Igbo, Hausa and Pidgin?</summary><p>Yes. Choose a language or a mix, and use the slang and Pidgin sliders to tune how local it sounds.</p></details>
+<details><summary>What about PDF / DOCX export and accounts?</summary><p>Those require a backend. This version exports TXT and a project file, and keeps projects privately in your own browser.</p></details></div></section>
+</div>
+
+<div id="app"><div class="wrap">
+<div class="tabs" id="tabs"></div>
+
+<div class="pane on" id="p-create">
+<h2>Create Your Song</h2>
+<div class="two" id="ups"></div>
+<div class="card" id="an" style="margin-top:14px"><h3>Audio Analysis</h3><p id="anm">Upload a beat or vocal to see its analysis.</p><div class="stat" id="ast"></div>
+<div class="note">Key and section detection are not performed in this build — they need a backend audio-analysis service.</div></div>
+<div class="card" style="margin-top:14px"><h3>Song Information</h3>
+<div class="two"><div><label>Song title</label><input type="text" id="title" placeholder="Untitled"></div>
+<div><label>Mode</label><select id="mode"><option value="beat">Write To My Beat</option><option value="vocal">Write Around My Vocal</option><option value="replace">Replace Words Only</option><option value="improve">Improve My Lyrics</option></select></div></div>
+<label>What should the song say?</label><textarea id="theme" placeholder="Falling in love with someone who doesn't feel the same way."></textarea>
+<div class="two"><div><label>Mood</label><select id="mood"></select></div><div><label>Language</label><select id="lang"></select></div></div>
+<label>Genres (pick several)</label><div class="chips" id="genres"></div>
+<label>Song structure (tap to toggle)</label><div class="chips" id="struct"></div>
+<div style="display:flex;gap:6px;margin-top:8px"><input type="text" id="cs" placeholder="Custom section, e.g. Post-Chorus"><button class="btn out sm" onclick="addCustom()">Add</button></div>
+<div class="sl" id="sliders"></div>
+<div class="two"><div><label>Words or phrases to include</label><textarea id="inc"></textarea></div><div><label>Words/topics to avoid</label><textarea id="avd"></textarea></div></div>
+<div id="impBox" style="display:none"><label>Your existing lyrics / vocal transcript</label><textarea id="imp" style="min-height:120px"></textarea></div>
+<div style="margin-top:16px"><button class="btn" id="gen" style="width:100%;padding:14px;font-size:17px" onclick="generate()">Generate Lyrics · 3 credits</button><div style="text-align:center;color:var(--mut);font-size:12px;margin-top:6px">Section edits, hooks and titles cost 1 credit each.</div></div></div></div>
+
+<div class="pane" id="p-edit"><div class="edgrid"><div><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px"><h2 id="et">Lyric Editor</h2><div class="chips"><button class="btn out sm" onclick="copyL()">Copy Lyrics</button><button class="btn out sm" onclick="dl('txt')">TXT</button><button class="btn out sm" onclick="dl('json')">Download Project</button><button class="btn sm" onclick="saveV()">Save Version</button></div></div>
+<div id="secs"><div class="note">No lyrics yet. Use Generate Lyrics on the Create tab.</div></div>
+<button class="btn out sm" onclick="addSec()">+ Add section</button>
+<div class="card" style="margin-top:16px"><h3>Version history</h3><div id="vers"><p>No saved versions.</p></div></div></div>
+<div><div class="card"><h3>AI Suggestions</h3><div id="sugs"><p style="color:var(--mut)">Suggestions appear once you have lyrics.</p></div></div>
+<div class="card" style="margin-top:12px"><h3>Hook Generator</h3><button class="btn out sm" id="hb2" onclick="hooks()">Generate Hook</button><div id="hk"></div></div>
+<div class="card" style="margin-top:12px"><h3>Title Generator</h3><button class="btn out sm" id="tb" onclick="titles()">Suggest 10 titles</button><div id="tl" class="chips" style="margin-top:8px"></div></div></div></div></div>
+
+<div class="pane" id="p-play"><h2>Audio + Lyrics</h2><div id="pnote" class="note">Upload a beat first to play along.</div>
+<div class="card"><div class="pl" id="plw"><canvas id="pc"></canvas></div>
+<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><button class="btn sm" id="pp">Play</button><span id="ts">0:00 / 0:00</span>
+<label style="margin:0">Vol <input type="range" id="vol" min="0" max="1" step=".05" value=".8" style="width:90px"></label>
+<label style="margin:0">Speed <select id="spd" style="width:auto"><option>0.75</option><option selected>1</option><option>1.25</option><option>1.5</option></select></label></div>
+<div class="note">Section highlighting divides the track evenly across your sections — an approximation, since section timing detection is not available.</div>
+<div class="lyr" id="pl"></div></div></div>
+
+<div class="pane" id="p-lib"><h2>Projects</h2><div class="note">Projects are stored privately in this browser. Audio files are not stored — re-upload when you reopen a project.</div><div id="lib"></div><div id="adm"></div></div>
+</div></div>
+
+<div class="modal" id="bm"><div class="card"><h3>Buy credits</h3><p>₦300 = 100 credits. Your balance: <b id="bal2"></b></p>
+<label>Packs of 100 credits</label><select id="packs" onchange="amt()"><option value="1">1 pack · 100 credits · ₦300</option><option value="2">2 packs · 200 credits · ₦600</option><option value="5">5 packs · 500 credits · ₦1,500</option><option value="10">10 packs · 1,000 credits · ₦3,000</option></select>
+<div class="bank">
+<div class="br"><span class="bl">Bank</span><span class="bv" id="bk">Access Bank</span><button class="btn out sm" onclick="cp('Access Bank')">Copy</button></div>
+<div class="br"><span class="bl">Account no.</span><span class="bv" id="ac">1920028778</span><button class="btn out sm" onclick="cp('1920028778')">Copy</button></div>
+<div class="br"><span class="bl">Reference</span><span class="bv" id="ref"></span><button class="btn out sm" onclick="cp($('ref').textContent)">Copy</button></div>
+<div class="br" style="border:0"><span class="bl">Amount</span><span class="bv" id="amt">₦300</span><button class="btn out sm" onclick="cp($('amt').textContent.replace(/[^0-9]/g,''))">Copy</button></div></div>
+<div class="note">1) Make the transfer with the reference. 2) Tap "I have paid". 3) The owner confirms the transfer and adds your credits. Credits are not added automatically.</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" id="paid" onclick="paid()">I have paid</button><button class="btn ghost" onclick="$('bm').style.display='none'">Close</button></div><div id="pst" style="margin-top:8px;font-size:13px"></div></div></div>
+<footer>© <span id="yr"></span> STARLYR · <b>TYMSTAR</b></footer><div id="toast"></div>
+
+<script>
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const GEN=['Afrobeats','Amapiano','R&B','Afro-R&B','Hip-Hop','Trap','Pop','Gospel','Dancehall','Alternative','Drill'];
+const MOODS=['Happy','Romantic','Emotional','Melancholic','Aggressive','Motivational','Spiritual','Chill','Dark','Energetic'];
+const LANGS=['English','Nigerian Pidgin','Yoruba','Igbo','Hausa','English + Nigerian Pidgin','English + Yoruba','English + Igbo','English + Hausa','Pidgin + Yoruba','Mixed'];
+const STR=['Intro','Verse 1','Pre-Chorus','Chorus','Verse 2','Bridge','Outro'];
+const SLD=['Simplicity','Word complexity','Rhyme density','Emotional intensity','Slang level','Pidgin level','Repetition','Metaphor usage'];
+let S={title:'',audio:{beat:null,vocal:null},sections:[],genres:['Afrobeats'],struct:['Intro','Verse 1','Chorus','Verse 2','Bridge','Outro'],versions:[],id:null,sl:{}};
+let toastT;function toast(m){const t=$('toast');t.textContent=m;t.style.display='block';clearTimeout(toastT);toastT=setTimeout(()=>t.style.display='none',3500)}
+function ls(k,v){try{if(v===undefined)return JSON.parse(localStorage.getItem(k));localStorage.setItem(k,JSON.stringify(v))}catch(e){return null}}
+$('yr').textContent=new Date().getFullYear();
+$('hb').innerHTML=Array.from({length:64},(_,i)=>`<i style="height:${15+Math.abs(Math.sin(i*.5)*Math.cos(i*.13))*85}%"></i>`).join('');
+$('gl').innerHTML=GEN.map(g=>`<span class="chip">${esc(g)}</span>`).join('');
+function go(v){$('land').style.display=v=='land'?'block':'none';$('app').style.display=v=='app'?'block':'none';scrollTo(0,0)}
+['create:Song Creator','edit:Lyric Editor','play:Audio + Lyrics','lib:Projects'].forEach((t,i)=>{const [k,n]=t.split(':');const b=document.createElement('button');b.className='tab'+(i?'':' on');b.textContent=n;b.onclick=()=>tab(k);b.dataset.k=k;$('tabs').appendChild(b)});
+function tab(k){document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('on',b.dataset.k==k));document.querySelectorAll('.pane').forEach(p=>p.classList.toggle('on',p.id=='p-'+k));if(k=='lib')renderLib();if(k=='play')renderPlay()}
+$('mood').innerHTML=MOODS.map(m=>`<option>${m}</option>`).join('');$('lang').innerHTML=LANGS.map(m=>`<option>${m}</option>`).join('');
+function chips(el,list,sel,cb){$(el).innerHTML='';list.forEach(x=>{const c=document.createElement('button');c.className='chip'+(sel.includes(x)?' on':'');c.textContent=x;c.onclick=()=>{const i=sel.indexOf(x);i>-1?sel.splice(i,1):sel.push(x);c.classList.toggle('on');cb&&cb()};$(el).appendChild(c)})}
+chips('genres',GEN,S.genres);chips('struct',STR,S.struct);
+function addCustom(){const v=$('cs').value.trim().slice(0,30);if(!v)return;S.struct.push(v);chips('struct',[...new Set([...STR,...S.struct])],S.struct);$('cs').value=''}
+$('sliders').innerHTML=SLD.map((s,i)=>{S.sl[s]=50;return`<div><label>${s}<span id="sv${i}">50</span></label><input type="range" min="0" max="100" value="50" oninput="S.sl['${s}']=+this.value;$('sv${i}').textContent=this.value"></div>`}).join('');
+$('mode').onchange=()=>{$('impBox').style.display=['improve','replace','vocal'].includes($('mode').value)?'block':'none'};
+
+// uploads
+['beat:Upload Beat','vocal:Upload Vocal (optional)'].forEach(t=>{const[k,n]=t.split(':');const d=document.createElement('div');d.className='drop';d.innerHTML=`<h3>${n}</h3><input type="file" accept=".mp3,.wav,.m4a,.flac,audio/*" id="f_${k}"><div id="m_${k}" style="font-size:13px;color:var(--mut);margin-top:6px">MP3, WAV, M4A or FLAC · max 50 MB</div><progress id="g_${k}" max="100" value="0" style="width:100%;display:none"></progress><canvas id="c_${k}" style="display:none"></canvas><div id="x_${k}" style="display:none;gap:8px;align-items:center;flex-wrap:wrap"><button class="btn sm" id="pb_${k}">Play</button><label style="margin:0">Vol <input type="range" id="v_${k}" min="0" max="1" step=".05" value=".8" style="width:90px"></label><button class="btn out sm" id="r_${k}">Remove</button></div>`;$('ups').appendChild(d);$('f_'+k).onchange=e=>load(k,e.target.files[0])});
+const fmt=s=>Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0');
+function load(k,f){if(!f)return;if(!/\.(mp3|wav|m4a|flac)$/i.test(f.name)){toast('Unsupported file type. Use MP3, WAV, M4A or FLAC.');return}
+if(f.size>50*1024*1024){toast('File is too large (max 50 MB).');return}
+const g=$('g_'+k);g.style.display='block';const r=new FileReader();
+r.onprogress=e=>{if(e.lengthComputable)g.value=e.loaded/e.total*80};
+r.onerror=()=>{g.style.display='none';toast('Upload failed. Please try again.')};
+r.onload=async()=>{try{const ac=new (window.AudioContext||window.webkitAudioContext)();const buf=await ac.decodeAudioData(r.result.slice(0));g.value=100;
+if(S.audio[k])S.audio[k].el.pause();
+const url=URL.createObjectURL(f),el=new Audio(url),ch=buf.getChannelData(0),N=600,pk=[],bs=Math.floor(ch.length/N);
+for(let i=0;i<N;i++){let m=0;for(let j=i*bs;j<(i+1)*bs;j+=8){const v=Math.abs(ch[j]);if(v>m)m=v}pk.push(m)}
+const a={name:f.name,dur:buf.duration,pk,el,...analyze(buf)};S.audio[k]=a;g.style.display='none';
+$('m_'+k).textContent=`${f.name} · ${fmt(a.dur)}`;$('c_'+k).style.display='block';$('x_'+k).style.display='flex';
+draw($('c_'+k),pk,0);el.volume=.8;el.onended=()=>$('pb_'+k).textContent='Play';
+el.ontimeupdate=()=>{draw($('c_'+k),pk,el.currentTime/a.dur);if(k=='beat')tick()};
+$('pb_'+k).onclick=()=>{if(el.paused){el.play();$('pb_'+k).textContent='Pause'}else{el.pause();$('pb_'+k).textContent='Play'}};
+$('v_'+k).oninput=e=>el.volume=e.target.value;
+$('r_'+k).onclick=()=>{el.pause();S.audio[k]=null;$('c_'+k).style.display='none';$('x_'+k).style.display='none';$('m_'+k).textContent='Removed. Choose a new file.';$('f_'+k).value='';showAn()};
+showAn();ac.close()}catch(e){g.style.display='none';toast('Could not read this audio file. It may be corrupt or unsupported by your browser.')}};
+r.readAsArrayBuffer(f)}
+function analyze(buf){const sr=buf.sampleRate,ch=buf.getChannelData(0),len=Math.min(ch.length,sr*90),hop=512,n=Math.floor(len/hop),env=new Float32Array(n);let sq=0;
+for(let i=0;i<n;i++){let s=0;for(let j=0;j<hop;j+=2){const v=ch[i*hop+j];s+=v*v}env[i]=Math.sqrt(s/(hop/2));sq+=env[i]}
+const rms=sq/n,on=new Float32Array(n);for(let i=1;i<n;i++)on[i]=Math.max(0,env[i]-env[i-1]);
+const fps=sr/hop;let best=0,bl=0;for(let bpm=70;bpm<=180;bpm++){const lag=Math.round(fps*60/bpm);let c=0;for(let i=lag;i<n;i++)c+=on[i]*on[i-lag];c*=1+0.0*bpm;if(c>best){best=c;bl=bpm}}
+let bpm=bl;const dB=20*Math.log10(Math.max(rms,1e-5));const energy=rms>.18?'High':rms>.08?'Medium':'Low';return{bpm,loud:dB.toFixed(1)+' dB RMS',energy}}
+function draw(cv,pk,p){const w=cv.width=cv.clientWidth*2,h=cv.height=140,c=cv.getContext('2d');c.clearRect(0,0,w,h);const mx=Math.max(...pk)||1,bw=w/pk.length;
+pk.forEach((v,i)=>{c.fillStyle=i/pk.length<p?'#a9741f':'#c9a96a';const bh=Math.max(2,v/mx*h*.9);c.fillRect(i*bw,(h-bh)/2,bw*.7,bh)})}
+function showAn(){const b=S.audio.beat,v=S.audio.vocal,a=b||v;if(!a){$('anm').style.display='';$('ast').innerHTML='';return}
+$('anm').style.display='none';$('ast').innerHTML=[['Source',b&&v?'Beat + Vocal':b?'Beat only':'Vocal only'],['BPM (estimate)',a.bpm],['Duration',fmt(a.dur)],['Energy',a.energy],['Loudness',a.loud],['Key','Needs backend']].map(x=>`<div><small>${x[0]}</small><b>${x[1]}</b></div>`).join('')}
+
+// AI
+const CR={used:ls('slx_used')||0,bought:0,db:null,uid:null,owner:false};
+const bal=()=>50+CR.bought-CR.used;
+function pill(){$('crp').textContent='Credits: '+bal();$('bal2').textContent=bal()}
+$('mq').textContent=Array(2).fill(GEN.join('  ·  ')+'  ·  Pidgin  ·  Yoruba  ·  Igbo  ·  Hausa  ·  ').join('');
+async function initCr(){try{const u=await claude.use('user'),db=await claude.use('db');if(!u||!db)throw 0;CR.db=db;CR.uid=await u.id();CR.owner=await u.isOwner();
+const c=await db.doc('credits/'+CR.uid).get();if(c.exists)CR.bought=c.data().bought||0;
+const w=await db.collection('data/users/'+CR.uid).doc('usage').get();if(w.exists)CR.used=w.data().used||0;
+if(CR.owner)loadAdm()}catch(e){}pill()}
+async function spend(n){CR.used+=n;ls('slx_used',CR.used);pill();try{if(CR.db)await CR.db.collection('data/users/'+CR.uid).doc('usage').set({used:CR.used})}catch(e){}}
+function cp(t){const f=()=>{const x=document.createElement('textarea');x.value=t;x.style.position='fixed';x.style.opacity='0';document.body.appendChild(x);x.select();try{document.execCommand('copy');toast('Copied: '+t)}catch(e){toast('Press and hold the text to copy')}x.remove()};(navigator.clipboard?navigator.clipboard.writeText(t).then(()=>toast('Copied: '+t)).catch(f):f())}
+function amt(){$('amt').textContent='₦'+(+$('packs').value*300)}
+function openBuy(){amt();$('ref').textContent='STX-'+(CR.uid||'guest').slice(-5).toUpperCase()+'-'+Math.random().toString(36).slice(2,6).toUpperCase();$('pst').textContent=CR.db?'':'Sign in to Claude to submit a payment request.';pill();$('bm').style.display='flex'}
+async function paid(){if(!CR.db){toast('Sign in to Claude to submit a payment request.');return}const n=+$('packs').value;$('paid').disabled=true;
+try{await CR.db.collection('requests').add({uid:CR.uid,ref:$('ref').textContent,credits:n*100,amount:n*300,status:'pending',t:Date.now()});$('pst').textContent='Request sent. Your credits are added once the owner confirms the transfer. Reference: '+$('ref').textContent}catch(e){$('pst').textContent='Could not send the request. Try again.'}$('paid').disabled=false}
+async function loadAdm(){const el=$('adm');try{const q=await CR.db.collection('requests').get();const rows=q.docs.filter(d=>d.data().status=='pending');el.innerHTML='<h2>Pending payments (owner)</h2>'+(rows.length?'':'<p>No pending requests.</p>');
+rows.forEach(d=>{const r=d.data(),c=document.createElement('div');c.className='card proj';c.style.marginBottom='8px';c.innerHTML=`<span>${esc(r.ref)} · ₦${+r.amount} · ${+r.credits} credits</span>`;const b=document.createElement('button');b.className='btn sm';b.textContent='Approve after checking bank';b.onclick=async()=>{b.disabled=true;try{const cd=await CR.db.doc('credits/'+r.uid).get();const cur=cd.exists?cd.data().bought||0:0;await CR.db.doc('credits/'+r.uid).set({bought:cur+r.credits});await CR.db.doc('requests/'+d.id).update({status:'approved'});toast('Credits added');loadAdm()}catch(e){toast('Approval failed');b.disabled=false}};c.appendChild(b);el.appendChild(c)})}catch(e){}}
+initCr();
+async function ai(prompt,cost=1){if(bal()<cost){openBuy();throw{code:'nocredit'}}const s=window.claude?await claude.use('sample'):null;if(!s)throw{code:'unavail'};const out=await s.json(prompt,{cache:false});await spend(cost);return out}
+function aerr(e){if(e&&e.code=='nocredit'){toast('Not enough credits for this action. Top up to continue.');return}toast(e&&e.code=='not_granted'?'AI access was declined. Allow it to generate lyrics.':e&&e.code=='rate_limited'?'Too many requests. Wait a moment and try again.':e&&e.code=='unavail'?'AI generation is only available when this page is opened inside Claude.':'AI request failed. Please try again.')}
+function ctx(){const a=S.audio.beat||S.audio.vocal;const sl=Object.entries(S.sl).map(([k,v])=>`${k}: ${v}/100`).join(', ');
+return`Song title: ${$('title').value||'Untitled'}\nTheme: ${$('theme').value}\nMood: ${$('mood').value}\nGenres: ${S.genres.join(', ')||'any'}\nLanguage: ${$('lang').value} (write naturally like a native Nigerian songwriter, never literal translations)\n`+(a?`Audio: about ${a.bpm} BPM (estimate), ${fmt(a.dur)} long, energy ${a.energy}. Fit line length and density to this tempo and length.\n`:'No audio uploaded; assume a mid-tempo track.\n')+`Style sliders: ${sl}\nInclude: ${$('inc').value||'none'}\nAvoid: ${$('avd').value||'none'}\nRules: lyrics must be singable (short phrases, max ~9 words per line), chorus repetitive and catchy.`}
+async function generate(){if(!S.struct.length){toast('Pick at least one section.');return}const mode=$('mode').value,imp=$('imp').value.trim();
+if(mode=='improve'&&!imp){toast('Paste your lyrics to improve.');return}if(mode!='improve'&&!$('theme').value.trim()&&!imp){toast('Tell the song what to say.');return}
+if(mode=='vocal'&&!S.audio.vocal){toast('Upload a vocal to use Write Around My Vocal.');return}
+const keep=S.sections.filter(s=>s.locked);$('gen').disabled=true;$('gen').textContent='Writing…';
+try{const task={beat:'Write original lyrics to fit the beat.',vocal:'Write lyrics that follow the vocal phrase lengths and pauses; syllable counts should be consistent per phrase.',replace:'Replace the words of the pasted lyrics with new content but keep the same rhythm and syllable counts per line.',improve:'Improve the pasted lyrics (flow, rhymes, meaning, catchiness, grammar, emotion) without changing the core idea.'}[mode];
+const r=await ai(`${task}\n${ctx()}\n${imp?'Existing lyrics:\n'+imp+'\n':''}Sections in order: ${S.struct.join(', ')}.\nReturn ONLY JSON: {"sections":[{"name":"Verse 1","lines":["line","line"]}]}`,3);
+const ns=(r.sections||[]).map(x=>({name:String(x.name),text:(x.lines||[]).join('\n'),locked:false}));if(!ns.length)throw{};
+S.sections=ns.map(n=>{const k=keep.find(l=>l.name==n.name);return k||n});S.title=$('title').value;renderSecs();saveV(true);tab('edit')}
+catch(e){aerr(e)}$('gen').disabled=false;$('gen').textContent='Generate Lyrics · 3 credits'}
+const ACT={regen:'Write a fresh version of this section.',rewrite:'Rewrite every line with the same meaning but better wording.',shorten:'Shorten the lines so they are easier to sing, keep the meaning.',rhyme:'Improve the rhyme scheme so lines rhyme naturally.',improve:'Improve flow, emotion and catchiness without changing the idea.'};
+async function secAct(i,a,btn){const s=S.sections[i];if(s.locked){toast('This section is locked.');return}const old=btn.textContent;btn.disabled=true;btn.textContent='…';
+try{const r=await ai(`${ACT[a]}\n${ctx()}\nSection: ${s.name}\nCurrent lines:\n${s.text}\nFull song for context:\n${lyr()}\nReturn ONLY JSON: {"lines":["..."]}`);if(!r.lines||!r.lines.length)throw{};s.text=r.lines.join('\n');renderSecs()}catch(e){aerr(e);btn.disabled=false;btn.textContent=old}}
+function renderSecs(){const c=$('secs');if(!S.sections.length){c.innerHTML='<div class="note">No lyrics yet. Use Generate Lyrics on the Create tab.</div>';sugs();return}c.innerHTML='';$('et').textContent=S.title||$('title').value||'Lyric Editor';
+S.sections.forEach((s,i)=>{const d=document.createElement('div');d.className='sec'+(s.locked?' lock':'');d.innerHTML=`<header><h3>[${esc(s.name.toUpperCase())}]</h3><div class="acts">${['regen:Regenerate','rewrite:Rewrite','shorten:Shorten','rhyme:Rhyme','improve:Improve'].map(x=>`<button class="btn out sm" data-a="${x.split(':')[0]}">${x.split(':')[1]}</button>`).join('')}<button class="btn sm ${s.locked?'':'ghost'}" data-l="1">${s.locked?'Locked':'Lock'}</button><button class="btn ghost sm" data-d="1">✕</button></div></header><textarea ${s.locked?'readonly':''}></textarea>`;
+const ta=d.querySelector('textarea');ta.value=s.text;ta.oninput=()=>{s.text=ta.value;sugs()};
+d.querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>secAct(i,b.dataset.a,b));d.querySelector('[data-l]').onclick=()=>{s.locked=!s.locked;renderSecs()};d.querySelector('[data-d]').onclick=()=>{S.sections.splice(i,1);renderSecs()};c.appendChild(d)});sugs()}
+function addSec(){const n=(prompt?null:null)||'New Section';S.sections.push({name:n,text:'',locked:false});renderSecs()}
+const lyr=()=>S.sections.map(s=>`[${s.name.toUpperCase()}]\n${s.text}`).join('\n\n');
+function wc(t){return t.trim()?t.trim().split(/\s+/).length:0}
+function sugs(){const el=$('sugs');if(!S.sections.length){el.innerHTML='<p style="color:var(--mut)">Suggestions appear once you have lyrics.</p>';return}const out=[];
+S.sections.forEach((s,i)=>{const long=s.text.split('\n').filter(l=>wc(l)>10);if(long.length)out.push([`${s.name} has ${long.length} line(s) over 10 words — hard to sing${bpmTxt()}.`,i,'shorten','Shorten']);if(!s.text.trim())out.push([`${s.name} is empty.`,i,'regen','Generate'])});
+const v=S.sections.filter(s=>/verse/i.test(s.name));if(v.length>1){const w=v.map(s=>wc(s.text));if(Math.max(...w)>1.4*Math.min(...w)&&Math.min(...w)>0)out.push([`Verse lengths differ a lot (${w.join(' vs ')} words). Balance them for a steadier flow.`,S.sections.indexOf(v[w.indexOf(Math.max(...w))]),'shorten','Trim longest'])}
+const ch=S.sections.find(s=>/chorus/i.test(s.name));if(ch){const ls=ch.text.split('\n').filter(Boolean);if(new Set(ls.map(l=>l.toLowerCase())).size==ls.length&&ls.length>3)out.push(['Your chorus has no repeated lines. Repetition makes hooks memorable.',S.sections.indexOf(ch),'improve','Make catchier'])}
+if(!out.length)out.push(['No issues found by the local checks. Try the Hook Generator for stronger chorus ideas.']);
+el.innerHTML='';out.forEach(o=>{const d=document.createElement('div');d.className='sug';d.textContent=o[0];if(o[2]){const b=document.createElement('button');b.className='btn out sm';b.textContent=o[3];b.onclick=()=>secAct(o[1],o[2],b);d.appendChild(document.createElement('br'));d.appendChild(b)}el.appendChild(d)})}
+function bpmTxt(){const a=S.audio.beat;return a?` at ~${a.bpm} BPM`:''}
+async function hooks(){const b=$('hb2');b.disabled=true;b.textContent='Writing…';try{const r=await ai(`Write 4 different chorus/hook options (4 lines each).\n${ctx()}\nScore each 1-10 for catchiness, rhyme and simplicity (your honest estimates).\nReturn ONLY JSON: {"hooks":[{"lines":["..."],"catchiness":8,"rhyme":7,"simplicity":9}]}`);
+$('hk').innerHTML='';(r.hooks||[]).forEach(h=>{const d=document.createElement('div');d.className='sug';const t=document.createElement('div');t.className='hook';t.textContent=(h.lines||[]).join('\n');d.appendChild(t);const sc=document.createElement('div');sc.className='sc';sc.textContent=`Catchy ${h.catchiness} · Rhyme ${h.rhyme} · Simple ${h.simplicity} (AI-estimated)`;d.appendChild(sc);
+const u=document.createElement('button');u.className='btn out sm';u.textContent='Use Hook';u.onclick=()=>{const c=S.sections.find(s=>/chorus/i.test(s.name)&&!s.locked);const tx=(h.lines||[]).join('\n');if(c)c.text=tx;else S.sections.push({name:'Chorus',text:tx,locked:false});renderSecs();toast('Hook applied')};d.appendChild(u);$('hk').appendChild(d)})}catch(e){aerr(e)}b.disabled=false;b.textContent='Generate Hook'}
+async function titles(){const b=$('tb');b.disabled=true;try{const r=await ai(`Suggest 10 song titles.\n${ctx()}\nLyrics:\n${lyr()}\nReturn ONLY JSON: {"titles":["..."]}`);$('tl').innerHTML='';(r.titles||[]).slice(0,10).forEach(t=>{const c=document.createElement('button');c.className='chip';c.textContent=String(t);c.onclick=()=>{S.title=c.textContent;$('title').value=S.title;$('et').textContent=S.title;toast('Title applied')};$('tl').appendChild(c)})}catch(e){aerr(e)}b.disabled=false}
+function copyL(){const t=lyr();(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>toast('Lyrics copied')).catch(()=>{const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');toast('Lyrics copied')}catch(e){toast('Copy failed')}ta.remove()})}
+async function dl(k){if(!S.sections.length){toast('Nothing to export yet.');return}const name=(S.title||'song').replace(/[^\w-]+/g,'_');const data=k=='txt'?`${S.title||'Untitled'}\n\n${lyr()}\n`:JSON.stringify(snap(),null,2);
+try{const d=await claude.use('downloads');if(!d)throw 0;await d.save({filename:`${name}.${k}`,data});}catch(e){if(e&&e.code=='cancelled')return;toast('Download unavailable here. Use Copy Lyrics instead.')}}
+function snap(){return{id:S.id,title:$('title').value||S.title,genres:[...S.genres],mood:$('mood').value,lang:$('lang').value,bpm:(S.audio.beat||{}).bpm||null,dur:(S.audio.beat||S.audio.vocal||{}).dur||null,sections:S.sections.map(s=>({...s})),versions:S.versions,updated:Date.now()}}
+function saveV(auto){S.versions.push({t:Date.now(),title:S.title,sections:S.sections.map(s=>({...s}))});S.versions=S.versions.slice(-20);saveP();renderVers();if(!auto)toast('Version saved')}
+function renderVers(){const el=$('vers');if(!S.versions.length){el.innerHTML='<p>No saved versions.</p>';return}el.innerHTML='';S.versions.forEach((v,i)=>{const d=document.createElement('div');d.className='proj sug';d.innerHTML=`<span>Version ${i+1} · ${new Date(v.t).toLocaleString()}</span>`;const b=document.createElement('button');b.className='btn out sm';b.textContent='Restore';b.onclick=()=>{S.sections=v.sections.map(s=>({...s}));renderSecs();toast('Version restored')};d.appendChild(b);el.appendChild(d)})}
+function saveP(){const p=snap();if(!S.id)S.id=p.id='p'+Date.now();const l=ls('slx_projects')||[];const i=l.findIndex(x=>x.id==S.id);i>-1?l[i]=p:l.unshift(p);ls('slx_projects',l)}
+function renderLib(){const l=ls('slx_projects')||[],el=$('lib');if(!l.length){el.innerHTML='<div class="card"><p>No saved projects yet. Generate lyrics to create your first one.</p></div>';return}el.innerHTML='';
+l.forEach(p=>{const d=document.createElement('div');d.className='card proj';d.style.marginBottom='10px';d.innerHTML=`<div><h3>${esc(p.title||'Untitled')}</h3><p>${new Date(p.updated).toLocaleDateString()} · ${esc((p.genres||[]).join(', '))} · ${p.bpm?p.bpm+' BPM':'no BPM'} · ${p.dur?fmt(p.dur):'—'} · ${p.sections.length?'Draft':'Empty'}</p></div><div class="chips"></div>`;const c=d.querySelector('.chips');
+[['Open',()=>{S.id=p.id;S.title=p.title;S.sections=p.sections.map(s=>({...s}));S.versions=p.versions||[];S.genres=[...(p.genres||[])];$('title').value=p.title||'';chips('genres',GEN,S.genres);renderSecs();renderVers();tab('edit')}],['Duplicate',()=>{const q={...p,id:'p'+Date.now(),title:(p.title||'Untitled')+' (copy)',updated:Date.now()};ls('slx_projects',[q,...l]);renderLib()}],['Delete',()=>{ls('slx_projects',l.filter(x=>x.id!=p.id));if(S.id==p.id)S.id=null;renderLib()}]].forEach(([n,f])=>{const b=document.createElement('button');b.className='btn out sm';b.textContent=n;b.onclick=f;c.appendChild(b)});el.appendChild(d)})}
+// player
+function renderPlay(){const b=S.audio.beat;$('pnote').style.display=b?'none':'block';$('pl').innerHTML=S.sections.map((s,i)=>`<div data-i="${i}"><b style="color:var(--gold)">[${esc(s.name)}]</b>\n${esc(s.text)}\n\n</div>`).join('');if(!b)return;draw($('pc'),b.pk,b.el.currentTime/b.dur);
+$('plw').querySelectorAll('.mk').forEach(m=>m.remove());S.sections.forEach((s,i)=>{if(!i)return;const m=document.createElement('div');m.className='mk';m.style.left=(i/S.sections.length*100)+'%';$('plw').appendChild(m)});tick()}
+function tick(){const b=S.audio.beat;if(!b)return;$('ts').textContent=fmt(b.el.currentTime)+' / '+fmt(b.dur);if($('p-play').classList.contains('on')){draw($('pc'),b.pk,b.el.currentTime/b.dur);const n=S.sections.length,ai_=Math.min(n-1,Math.floor(b.el.currentTime/b.dur*n));document.querySelectorAll('#pl>div').forEach((d,i)=>d.classList.toggle('a',i==ai_))}}
+$('pp').onclick=()=>{const b=S.audio.beat;if(!b)return;if(b.el.paused){b.el.play();$('pp').textContent='Pause'}else{b.el.pause();$('pp').textContent='Play'}};
+$('vol').oninput=e=>{if(S.audio.beat)S.audio.beat.el.volume=e.target.value};$('spd').onchange=e=>{if(S.audio.beat)S.audio.beat.el.playbackRate=+e.target.value};
+$('pc').onclick=e=>{const b=S.audio.beat;if(!b)return;const r=$('pc').getBoundingClientRect();b.el.currentTime=(e.clientX-r.left)/r.width*b.dur;tick()};
+$('title').oninput=e=>{S.title=e.target.value};
+</script></body></html>
