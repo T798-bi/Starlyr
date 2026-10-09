@@ -147,6 +147,7 @@ textarea{min-height:70px;resize:vertical}input[type=range]{width:100%;accent-col
 <div class="br"><span class="bl">Account no.</span><span class="bv" id="ac">1920028778</span><button class="btn out sm" onclick="cp('1920028778')">Copy</button></div>
 <div class="br"><span class="bl">Reference</span><span class="bv" id="ref"></span><button class="btn out sm" onclick="cp($('ref').textContent)">Copy</button></div>
 <div class="br" style="border:0"><span class="bl">Amount</span><span class="bv" id="amt">₦300</span><button class="btn out sm" onclick="cp($('amt').textContent.replace(/[^0-9]/g,''))">Copy</button></div></div>
+<label>Your name</label><input type="text" id="pn" maxlength="60" placeholder="Full name">
 <div class="note">1) Make the transfer with the reference. 2) Tap "I have paid". 3) The owner confirms the transfer and adds your credits. Credits are not added automatically.</div>
 <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" id="paid" onclick="paid()">I have paid</button><button class="btn ghost" onclick="$('bm').style.display='none'">Close</button></div><div id="pst" style="margin-top:8px;font-size:13px"></div></div></div>
 <footer>© <span id="yr"></span> STARLYR · <b>TYMSTAR</b></footer><div id="toast"></div>
@@ -214,15 +215,26 @@ $('mq').textContent=Array(2).fill(GEN.join('  ·  ')+'  ·  Pidgin  ·  Yoruba  
 async function initCr(){try{const u=await claude.use('user'),db=await claude.use('db');if(!u||!db)throw 0;CR.db=db;CR.uid=await u.id();CR.owner=await u.isOwner();
 const c=await db.doc('credits/'+CR.uid).get();if(c.exists)CR.bought=c.data().bought||0;
 const w=await db.collection('data/users/'+CR.uid).doc('usage').get();if(w.exists)CR.used=w.data().used||0;
-if(CR.owner)loadAdm()}catch(e){}pill()}
+if(CR.owner){loadAdm();if(/review=/.test(location.search)){go('app');tab('lib')}}}catch(e){}pill()}
 async function spend(n){CR.used+=n;ls('slx_used',CR.used);pill();try{if(CR.db)await CR.db.collection('data/users/'+CR.uid).doc('usage').set({used:CR.used})}catch(e){}}
 function cp(t){const f=()=>{const x=document.createElement('textarea');x.value=t;x.style.position='fixed';x.style.opacity='0';document.body.appendChild(x);x.select();try{document.execCommand('copy');toast('Copied: '+t)}catch(e){toast('Press and hold the text to copy')}x.remove()};(navigator.clipboard?navigator.clipboard.writeText(t).then(()=>toast('Copied: '+t)).catch(f):f())}
 function amt(){$('amt').textContent='₦'+(+$('packs').value*300)}
-function openBuy(){amt();$('ref').textContent='STX-'+(CR.uid||'guest').slice(-5).toUpperCase()+'-'+Math.random().toString(36).slice(2,6).toUpperCase();$('pst').textContent=CR.db?'':'Sign in to Claude to submit a payment request.';pill();$('bm').style.display='flex'}
-async function paid(){if(!CR.db){toast('Sign in to Claude to submit a payment request.');return}const n=+$('packs').value;$('paid').disabled=true;
-try{await CR.db.collection('requests').add({uid:CR.uid,ref:$('ref').textContent,credits:n*100,amount:n*300,status:'pending',t:Date.now()});$('pst').textContent='Request sent. Your credits are added once the owner confirms the transfer. Reference: '+$('ref').textContent}catch(e){$('pst').textContent='Could not send the request. Try again.'}$('paid').disabled=false}
+function openBuy(){amt();$('ref').textContent='STX-'+(CR.uid||'guest').slice(-5).toUpperCase()+'-'+Math.random().toString(36).slice(2,6).toUpperCase();if(LAST&&LAST.status=='pending'){showSt(LAST,'pending');checkSt()}else $('pst').textContent='';pill();$('bm').style.display='flex'}
+const NOTIFY_URL='',APP='https://claude.ai/artifact/R6sJwP7M9rAeguPH8CmeS8';let LAST=(ls('slx_pend')||[]).slice(-1)[0];
+function showSt(r,s){r.status=s;const e=$('pst');e.innerHTML='';const d=document.createElement('div');d.className='note';
+const m={pending:['⏳ Pending verification','Payment details received. Your '+r.credits+' credits are added once the owner confirms the transfer in the bank account.'],approved:['✅ Payment successful',r.credits+' credits have been added to your balance.'],rejected:['❌ Payment unsuccessful','The transfer could not be confirmed. Check the reference and amount, then contact the owner.']}[s];
+d.innerHTML='<b></b><br><span></span>';d.firstChild.textContent=m[0];d.lastChild.textContent=m[1]+' Ref: '+r.ref;e.appendChild(d);
+if(s=='pending'){const b=document.createElement('button');b.className='btn out sm';b.style.marginTop='6px';b.textContent='Check status';b.onclick=checkSt;e.appendChild(b)}
+LAST=r;const L=ls('slx_pend')||[];const i=L.findIndex(x=>x.ref==r.ref);i>-1?L[i]=r:L.push(r);ls('slx_pend',L)}
+async function checkSt(){if(!LAST)return;if(!CR.db||!LAST.id){toast('Still pending. The result appears here after the owner verifies.');return}
+try{const s=await CR.db.doc('requests/'+LAST.id).get();const st=s.exists?s.data().status:'pending';if(st=='approved'){await initCr();showSt(LAST,'approved')}else if(st=='rejected')showSt(LAST,'rejected');else toast('Still pending verification.')}catch(e){toast('Could not check status. Try again.')}}
+async function paid(){const pn=$('pn').value.trim().slice(0,60);if(!pn){toast('Enter your name.');return}
+const n=+$('packs').value,rec={uid:CR.uid||'guest',name:pn,ref:$('ref').textContent,credits:n*100,amount:n*300,status:'pending',t:Date.now()};$('paid').disabled=true;
+try{if(CR.db){const d=await CR.db.collection('requests').add(rec);if(d&&d.id)rec.id=d.id}}catch(e){}
+try{if(NOTIFY_URL)await fetch(NOTIFY_URL,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({id:rec.id||'',name:rec.name,credits:rec.credits,amount:rec.amount,ref:rec.ref})})}catch(e){}
+showSt(rec,'pending');$('paid').disabled=false}
 async function loadAdm(){const el=$('adm');try{const q=await CR.db.collection('requests').get();const rows=q.docs.filter(d=>d.data().status=='pending');el.innerHTML='<h2>Pending payments (owner)</h2>'+(rows.length?'':'<p>No pending requests.</p>');
-rows.forEach(d=>{const r=d.data(),c=document.createElement('div');c.className='card proj';c.style.marginBottom='8px';c.innerHTML=`<span>${esc(r.ref)} · ₦${+r.amount} · ${+r.credits} credits</span>`;const b=document.createElement('button');b.className='btn sm';b.textContent='Approve after checking bank';b.onclick=async()=>{b.disabled=true;try{const cd=await CR.db.doc('credits/'+r.uid).get();const cur=cd.exists?cd.data().bought||0:0;await CR.db.doc('credits/'+r.uid).set({bought:cur+r.credits});await CR.db.doc('requests/'+d.id).update({status:'approved'});toast('Credits added');loadAdm()}catch(e){toast('Approval failed');b.disabled=false}};c.appendChild(b);el.appendChild(c)})}catch(e){}}
+rows.forEach(d=>{const r=d.data(),c=document.createElement('div');c.className='card proj';c.style.marginBottom='8px';if(location.search.includes('review='+d.id))c.style.borderColor='#a9741f';c.innerHTML=`<span>${esc(r.name||'')} · ${esc(r.ref)} · ₦${+r.amount} · ${+r.credits} credits</span>`;const b=document.createElement('button');b.className='btn sm';b.textContent='Approve after checking bank';b.onclick=async()=>{b.disabled=true;try{const cd=await CR.db.doc('credits/'+r.uid).get();const cur=cd.exists?cd.data().bought||0:0;await CR.db.doc('credits/'+r.uid).set({bought:cur+r.credits});await CR.db.doc('requests/'+d.id).update({status:'approved'});toast('Credits added');loadAdm()}catch(e){toast('Approval failed');b.disabled=false}};c.appendChild(b);const x=document.createElement('button');x.className='btn ghost sm';x.textContent='Reject';x.onclick=async()=>{x.disabled=true;try{await CR.db.doc('requests/'+d.id).update({status:'rejected'});toast('Marked unsuccessful');loadAdm()}catch(e){toast('Failed');x.disabled=false}};c.appendChild(x);el.appendChild(c)})}catch(e){}}
 initCr();
 async function ai(prompt,cost=1){if(bal()<cost){openBuy();throw{code:'nocredit'}}const s=window.claude?await claude.use('sample'):null;if(!s)throw{code:'unavail'};const out=await s.json(prompt,{cache:false});await spend(cost);return out}
 function aerr(e){if(e&&e.code=='nocredit'){toast('Not enough credits for this action. Top up to continue.');return}toast(e&&e.code=='not_granted'?'AI access was declined. Allow it to generate lyrics.':e&&e.code=='rate_limited'?'Too many requests. Wait a moment and try again.':e&&e.code=='unavail'?'AI generation is only available when this page is opened inside Claude.':'AI request failed. Please try again.')}
@@ -276,4 +288,28 @@ $('pp').onclick=()=>{const b=S.audio.beat;if(!b)return;if(b.el.paused){b.el.play
 $('vol').oninput=e=>{if(S.audio.beat)S.audio.beat.el.volume=e.target.value};$('spd').onchange=e=>{if(S.audio.beat)S.audio.beat.el.playbackRate=+e.target.value};
 $('pc').onclick=e=>{const b=S.audio.beat;if(!b)return;const r=$('pc').getBoundingClientRect();b.el.currentTime=(e.clientX-r.left)/r.width*b.dur;tick()};
 $('title').oninput=e=>{S.title=e.target.value};
-</script></body></html>
+</script><!--
+EMAIL WORKER (separate server file, not part of the page). Save the code below as worker.js and deploy it on Cloudflare Workers, then paste its URL into NOTIFY_URL in the script above.
+
+// STARLYR payment-alert email worker (Cloudflare Workers + Resend)
+// Env vars: RESEND_API_KEY (secret), OWNER_EMAIL=oluwatimileyinaji@gmail.com,
+// APP_URL=<your STARLYR page URL>, ALLOWED_ORIGIN=<your site origin>, FROM (optional)
+export default{async fetch(req,env){
+const cors={'Access-Control-Allow-Origin':env.ALLOWED_ORIGIN||'*','Access-Control-Allow-Headers':'content-type','Access-Control-Allow-Methods':'POST,OPTIONS'};
+if(req.method==='OPTIONS')return new Response(null,{headers:cors});
+if(req.method!=='POST')return new Response('Method not allowed',{status:405,headers:cors});
+let b;try{b=await req.json()}catch{return new Response('Bad request',{status:400,headers:cors})}
+const c=s=>String(s||'').replace(/[<>&"'`]/g,'').slice(0,80);
+const name=c(b.name),ref=c(b.ref),credits=Number(b.credits)|0,amount=Number(b.amount)|0;
+if(!name||credits<1||credits>10000)return new Response('Invalid',{status:400,headers:cors});
+const link=env.APP_URL+(b.id?'?review='+encodeURIComponent(c(b.id)):'');
+const html=`<div style="font-family:Arial,sans-serif;max-width:480px"><h2 style="color:#a9741f">New STARLYR credit request</h2>
+<p><b>Name:</b> ${name}<br><b>Credits ordered:</b> ${credits}<br><b>Amount to confirm:</b> &#8358;${amount}<br><b>Reference:</b> ${ref}</p>
+<p>Check Access Bank for this amount with this reference, then verify:</p>
+<p><a href="${link}" style="background:#a9741f;color:#fff;padding:12px 20px;border-radius:6px;text-decoration:none;font-weight:bold">Verify payment</a></p></div>`;
+const r=await fetch('https://api.resend.com/emails',{method:'POST',headers:{Authorization:'Bearer '+env.RESEND_API_KEY,'content-type':'application/json'},
+body:JSON.stringify({from:env.FROM||'STARLYR <onboarding@resend.dev>',to:[env.OWNER_EMAIL],subject:`STARLYR: ${name} ordered ${credits} credits`,html})});
+return new Response(JSON.stringify({ok:r.ok}),{status:r.ok?200:502,headers:{...cors,'content-type':'application/json'}})}}
+
+-->
+</body></html>
