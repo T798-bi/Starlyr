@@ -42,7 +42,7 @@ footer{background:var(--dark);color:#d8c59d;text-align:center;padding:26px 0;fon
 .drop{border:2px dashed var(--gold2);border-radius:8px;padding:16px;background:var(--card)}
 .drop h3{font-size:17px}canvas{width:100%;height:70px;display:block;background:#ead9b5;border-radius:4px;margin:8px 0}
 label{display:block;font-weight:600;font-size:13px;margin:12px 0 4px}
-input[type=text],select,textarea{width:100%;background:#fffaf0;border:1px solid var(--line);border-radius:6px;padding:9px 10px;font:inherit;color:var(--ink)}
+input[type=text],input[type=password],select,textarea{width:100%;background:#fffaf0;border:1px solid var(--line);border-radius:6px;padding:9px 10px;font:inherit;color:var(--ink)}
 textarea{min-height:70px;resize:vertical}input[type=range]{width:100%;accent-color:var(--gold)}
 .sl{display:grid;grid-template-columns:1fr 1fr;gap:0 16px}.sl label{display:flex;justify-content:space-between;margin-top:8px}
 .stat{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin-top:8px}.stat div{background:#fffaf0;border:1px solid var(--line);border-radius:6px;padding:8px}.stat small{color:var(--mut);display:block}.stat b{font-size:17px}
@@ -91,11 +91,11 @@ textarea{min-height:70px;resize:vertical}input[type=range]{width:100%;accent-col
 <section class="s"><div class="wrap"><div class="eyebrow">Pricing</div><h2>Simple plans</h2>
 <div class="price"><div class="card"><h3>Free</h3><div class="big">$0</div><ul><li><b>50 free starter credits</b> on signup</li><li>3 credits per full lyric, 1 per section edit, hook or title</li><li>Beat-aware &amp; vocal-aware modes</li></ul></div>
 <div class="card" style="border-color:var(--gold)"><h3>Top-up credits</h3><div class="big">₦300 <small style="font-size:15px">/ 100 credits</small></div><ul><li>Pay by bank transfer</li><li>Buy in packs of 100</li><li>Credits never expire</li></ul><button class="btn" style="margin-top:10px" onclick="go('app');openBuy()">Buy credits</button></div></div>
-<div class="note">Payments are manual bank transfers confirmed by the owner, then credits are added to your balance. Automatic card payments need a payment provider such as Paystack and are not part of this build.</div></div></section>
+<div class="note">Pay by bank transfer, tap &quot;I have paid&quot;, and the owner confirms the transfer. Your credits are then added to your account automatically.</div></div></section>
 
 <section class="s alt"><div class="wrap"><div class="eyebrow">FAQ</div><h2>Questions</h2>
 <details><summary>Does it really analyze my audio?</summary><p>Yes, in your browser: duration, a tempo estimate from the beat's pulse, energy level and the waveform. Key and section detection need a server-side audio service, so they are marked as unavailable rather than guessed.</p></details>
-<details><summary>Is my audio uploaded anywhere?</summary><p>No. Files are decoded locally and never leave your device in this build.</p></details>
+<details><summary>Is my audio uploaded anywhere?</summary><p>No. Audio is decoded in your browser and never uploaded. Only the lyric prompt is sent to the AI.</p></details>
 <details><summary>Can it write in Yoruba, Igbo, Hausa and Pidgin?</summary><p>Yes. Choose a language or a mix, and use the slang and Pidgin sliders to tune how local it sounds.</p></details>
 <details><summary>What about PDF / DOCX export and accounts?</summary><p>Those require a backend. This version exports TXT and a project file, and keeps projects privately in your own browser.</p></details></div></section>
 </div>
@@ -140,6 +140,7 @@ textarea{min-height:70px;resize:vertical}input[type=range]{width:100%;accent-col
 <div class="pane" id="p-lib"><h2>Projects</h2><div class="note">Projects are stored privately in this browser. Audio files are not stored — re-upload when you reopen a project.</div><div id="lib"></div><div id="adm"></div></div>
 </div></div>
 
+<div class="modal" id="am"><div class="card"><h3>Log in or sign up</h3><p>New accounts get 50 free credits.</p><label>Email</label><input type="text" id="ae1" autocomplete="email"><label>Password (8+ characters)</label><input type="password" id="ap" autocomplete="current-password"><div id="ae" style="color:#a32;font-size:13px;margin-top:6px"></div><div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap"><button class="btn" onclick="authGo('login')">Log in</button><button class="btn out" onclick="authGo('signup')">Sign up</button><button class="btn ghost" onclick="$('am').style.display='none'">Close</button></div></div></div>
 <div class="modal" id="bm"><div class="card"><h3>Buy credits</h3><p>₦300 = 100 credits. Your balance: <b id="bal2"></b></p>
 <label>Packs of 100 credits</label><select id="packs" onchange="amt()"><option value="1">1 pack · 100 credits · ₦300</option><option value="2">2 packs · 200 credits · ₦600</option><option value="5">5 packs · 500 credits · ₦1,500</option><option value="10">10 packs · 1,000 credits · ₦3,000</option></select>
 <div class="bank">
@@ -149,7 +150,7 @@ textarea{min-height:70px;resize:vertical}input[type=range]{width:100%;accent-col
 <div class="br" style="border:0"><span class="bl">Amount</span><span class="bv" id="amt">₦300</span><button class="btn out sm" onclick="cp($('amt').textContent.replace(/[^0-9]/g,''))">Copy</button></div></div>
 <label>Your name</label><input type="text" id="pn" maxlength="60" placeholder="Full name">
 <div class="note">1) Make the transfer with the reference. 2) Tap "I have paid". 3) The owner confirms the transfer and adds your credits. Credits are not added automatically.</div>
-<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" id="paid" onclick="paid()">I have paid</button><button class="btn ghost" onclick="$('bm').style.display='none'">Close</button></div><div id="pst" style="margin-top:8px;font-size:13px"></div></div></div>
+<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" id="paid" onclick="paid()">I have paid</button><button class="btn ghost" onclick="$('bm').style.display='none'">Close</button><button class="btn ghost" onclick="logout()">Log out</button></div><div id="pst" style="margin-top:8px;font-size:13px"></div></div></div>
 <footer>© <span id="yr"></span> STARLYR · <b>TYMSTAR</b></footer><div id="toast"></div>
 
 <script>
@@ -208,36 +209,30 @@ function showAn(){const b=S.audio.beat,v=S.audio.vocal,a=b||v;if(!a){$('anm').st
 $('anm').style.display='none';$('ast').innerHTML=[['Source',b&&v?'Beat + Vocal':b?'Beat only':'Vocal only'],['BPM (estimate)',a.bpm],['Duration',fmt(a.dur)],['Energy',a.energy],['Loudness',a.loud],['Key','Needs backend']].map(x=>`<div><small>${x[0]}</small><b>${x[1]}</b></div>`).join('')}
 
 // AI
-const CR={used:ls('slx_used')||0,bought:0,db:null,uid:null,owner:false};
-const bal=()=>50+CR.bought-CR.used;
-function pill(){$('crp').textContent='Credits: '+bal();$('bal2').textContent=bal()}
+const CR={tok:ls('slx_tok'),email:ls('slx_em'),credits:null};let LAST=null;
+const bal=()=>CR.credits;
+function pill(){$('crp').textContent=CR.tok?'Credits: '+(CR.credits==null?'…':CR.credits):'Log in';$('bal2').textContent=CR.credits==null?'…':CR.credits}
 $('mq').textContent=Array(2).fill(GEN.join('  ·  ')+'  ·  Pidgin  ·  Yoruba  ·  Igbo  ·  Hausa  ·  ').join('');
-async function initCr(){try{const u=await claude.use('user'),db=await claude.use('db');if(!u||!db)throw 0;CR.db=db;CR.uid=await u.id();CR.owner=await u.isOwner();
-const c=await db.doc('credits/'+CR.uid).get();if(c.exists)CR.bought=c.data().bought||0;
-const w=await db.collection('data/users/'+CR.uid).doc('usage').get();if(w.exists)CR.used=w.data().used||0;
-if(CR.owner){loadAdm();if(/review=/.test(location.search)){go('app');tab('lib')}}}catch(e){}pill()}
-async function spend(n){CR.used+=n;ls('slx_used',CR.used);pill();try{if(CR.db)await CR.db.collection('data/users/'+CR.uid).doc('usage').set({used:CR.used})}catch(e){}}
+async function api(path,body){const r=await fetch('/api/'+path,{method:body?'POST':'GET',headers:{'content-type':'application/json',...(CR.tok?{Authorization:'Bearer '+CR.tok}:{})},body:body?JSON.stringify(body):undefined});let j={};try{j=await r.json()}catch(e){}
+if(r.status==401&&CR.tok&&path!='auth')logout(true);if(!r.ok)throw{code:r.status==402?'nocredit':r.status==401?'auth':r.status==429?'rate_limited':'fail',message:j.error};return j}
+async function refresh(){if(!CR.tok){pill();return}try{const j=await api('me');CR.credits=j.credits;LAST=(j.requests||[])[0]||null;pill()}catch(e){}}
+function logout(q){CR.tok=null;CR.email=null;CR.credits=null;LAST=null;ls('slx_tok',null);ls('slx_em',null);pill();$('bm').style.display='none';if(!q)toast('Logged out')}
+function openAuth(){$('ae').textContent='';$('am').style.display='flex'}
+async function authGo(a){$('ae').textContent='';try{const j=await api('auth',{action:a,email:$('ae1').value,password:$('ap').value});CR.tok=j.token;CR.email=j.email;ls('slx_tok',j.token);ls('slx_em',j.email);$('am').style.display='none';$('ap').value='';await refresh();toast(a=='signup'?'Account created. 50 free credits added.':'Logged in')}catch(x){$('ae').textContent=x.message||'Something went wrong. Try again.'}}
 function cp(t){const f=()=>{const x=document.createElement('textarea');x.value=t;x.style.position='fixed';x.style.opacity='0';document.body.appendChild(x);x.select();try{document.execCommand('copy');toast('Copied: '+t)}catch(e){toast('Press and hold the text to copy')}x.remove()};(navigator.clipboard?navigator.clipboard.writeText(t).then(()=>toast('Copied: '+t)).catch(f):f())}
 function amt(){$('amt').textContent='₦'+(+$('packs').value*300)}
-function openBuy(){amt();$('ref').textContent='STX-'+(CR.uid||'guest').slice(-5).toUpperCase()+'-'+Math.random().toString(36).slice(2,6).toUpperCase();if(LAST&&LAST.status=='pending'){showSt(LAST,'pending');checkSt()}else $('pst').textContent='';pill();$('bm').style.display='flex'}
-const NOTIFY_URL='',APP='https://claude.ai/artifact/R6sJwP7M9rAeguPH8CmeS8';let LAST=(ls('slx_pend')||[]).slice(-1)[0];
-function showSt(r,s){r.status=s;const e=$('pst');e.innerHTML='';const d=document.createElement('div');d.className='note';
-const m={pending:['⏳ Pending verification','Payment details received. Your '+r.credits+' credits are added once the owner confirms the transfer in the bank account.'],approved:['✅ Payment successful',r.credits+' credits have been added to your balance.'],rejected:['❌ Payment unsuccessful','The transfer could not be confirmed. Check the reference and amount, then contact the owner.']}[s];
+function openBuy(){if(!CR.tok){openAuth();return}amt();refresh().then(()=>{if(LAST&&LAST.status=='pending')showSt(LAST,'pending')});$('ref').textContent='STX-'+Math.random().toString(36).slice(2,8).toUpperCase();$('pst').innerHTML='';$('bm').style.display='flex'}
+function showSt(r,s){const e=$('pst');e.innerHTML='';const d=document.createElement('div');d.className='note';
+const m={pending:['⏳ Pending verification','Request sent to the owner. Your '+r.credits+' credits are added as soon as the transfer is confirmed.'],approved:['✅ Payment successful',r.credits+' credits have been added to your balance.'],rejected:['❌ Payment unsuccessful','The transfer could not be confirmed. Check the reference and amount, then contact the owner.']}[s];
 d.innerHTML='<b></b><br><span></span>';d.firstChild.textContent=m[0];d.lastChild.textContent=m[1]+' Ref: '+r.ref;e.appendChild(d);
-if(s=='pending'){const b=document.createElement('button');b.className='btn out sm';b.style.marginTop='6px';b.textContent='Check status';b.onclick=checkSt;e.appendChild(b)}
-LAST=r;const L=ls('slx_pend')||[];const i=L.findIndex(x=>x.ref==r.ref);i>-1?L[i]=r:L.push(r);ls('slx_pend',L)}
-async function checkSt(){if(!LAST)return;if(!CR.db||!LAST.id){toast('Still pending. The result appears here after the owner verifies.');return}
-try{const s=await CR.db.doc('requests/'+LAST.id).get();const st=s.exists?s.data().status:'pending';if(st=='approved'){await initCr();showSt(LAST,'approved')}else if(st=='rejected')showSt(LAST,'rejected');else toast('Still pending verification.')}catch(e){toast('Could not check status. Try again.')}}
-async function paid(){const pn=$('pn').value.trim().slice(0,60);if(!pn){toast('Enter your name.');return}
-const n=+$('packs').value,rec={uid:CR.uid||'guest',name:pn,ref:$('ref').textContent,credits:n*100,amount:n*300,status:'pending',t:Date.now()};$('paid').disabled=true;
-try{if(CR.db){const d=await CR.db.collection('requests').add(rec);if(d&&d.id)rec.id=d.id}}catch(e){}
-try{if(NOTIFY_URL)await fetch(NOTIFY_URL,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({id:rec.id||'',name:rec.name,credits:rec.credits,amount:rec.amount,ref:rec.ref})})}catch(e){}
-showSt(rec,'pending');$('paid').disabled=false}
-async function loadAdm(){const el=$('adm');try{const q=await CR.db.collection('requests').get();const rows=q.docs.filter(d=>d.data().status=='pending');el.innerHTML='<h2>Pending payments (owner)</h2>'+(rows.length?'':'<p>No pending requests.</p>');
-rows.forEach(d=>{const r=d.data(),c=document.createElement('div');c.className='card proj';c.style.marginBottom='8px';if(location.search.includes('review='+d.id))c.style.borderColor='#a9741f';c.innerHTML=`<span>${esc(r.name||'')} · ${esc(r.ref)} · ₦${+r.amount} · ${+r.credits} credits</span>`;const b=document.createElement('button');b.className='btn sm';b.textContent='Approve after checking bank';b.onclick=async()=>{b.disabled=true;try{const cd=await CR.db.doc('credits/'+r.uid).get();const cur=cd.exists?cd.data().bought||0:0;await CR.db.doc('credits/'+r.uid).set({bought:cur+r.credits});await CR.db.doc('requests/'+d.id).update({status:'approved'});toast('Credits added');loadAdm()}catch(e){toast('Approval failed');b.disabled=false}};c.appendChild(b);const x=document.createElement('button');x.className='btn ghost sm';x.textContent='Reject';x.onclick=async()=>{x.disabled=true;try{await CR.db.doc('requests/'+d.id).update({status:'rejected'});toast('Marked unsuccessful');loadAdm()}catch(e){toast('Failed');x.disabled=false}};c.appendChild(x);el.appendChild(c)})}catch(e){}}
-initCr();
-async function ai(prompt,cost=1){if(bal()<cost){openBuy();throw{code:'nocredit'}}const s=window.claude?await claude.use('sample'):null;if(!s)throw{code:'unavail'};const out=await s.json(prompt,{cache:false});await spend(cost);return out}
-function aerr(e){if(e&&e.code=='nocredit'){toast('Not enough credits for this action. Top up to continue.');return}toast(e&&e.code=='not_granted'?'AI access was declined. Allow it to generate lyrics.':e&&e.code=='rate_limited'?'Too many requests. Wait a moment and try again.':e&&e.code=='unavail'?'AI generation is only available when this page is opened inside Claude.':'AI request failed. Please try again.')}
+if(s=='pending'){const b=document.createElement('button');b.className='btn out sm';b.style.marginTop='6px';b.textContent='Check status';b.onclick=checkSt;e.appendChild(b)}}
+async function checkSt(){await refresh();if(!LAST)return;if(LAST.status=='approved'||LAST.status=='rejected')showSt(LAST,LAST.status);else toast('Still pending verification.')}
+async function paid(){const pn=$('pn').value.trim().slice(0,60);if(!pn){toast('Enter your full name.');return}$('paid').disabled=true;
+try{const r=await api('pay',{name:pn,packs:+$('packs').value,ref:$('ref').textContent});LAST=r.request;showSt(r.request,'pending')}catch(e){toast(e.message||'Could not send. Try again.')}$('paid').disabled=false}
+async function ai(prompt,cost=1){if(!CR.tok){openAuth();throw{code:'auth'}}const j=await api('ai',{prompt,kind:cost==3?'lyrics':'edit'});CR.credits=j.credits;pill();
+let t=(j.text||'').trim();const a=t.indexOf('{'),z=t.lastIndexOf('}');return JSON.parse(t.slice(a,z+1))}
+function aerr(e){if(e&&e.code=='auth')return;if(e&&e.code=='nocredit'){toast('Not enough credits. Top up to continue.');openBuy();return}toast(e&&e.code=='rate_limited'?'Too many requests. Wait a moment and try again.':e&&e.message?e.message:'The AI returned something unreadable. Please try again.')}
+refresh();
 function ctx(){const a=S.audio.beat||S.audio.vocal;const sl=Object.entries(S.sl).map(([k,v])=>`${k}: ${v}/100`).join(', ');
 return`Song title: ${$('title').value||'Untitled'}\nTheme: ${$('theme').value}\nMood: ${$('mood').value}\nGenres: ${S.genres.join(', ')||'any'}\nLanguage: ${$('lang').value} (write naturally like a native Nigerian songwriter, never literal translations)\n`+(a?`Audio: about ${a.bpm} BPM (estimate), ${fmt(a.dur)} long, energy ${a.energy}. Fit line length and density to this tempo and length.\n`:'No audio uploaded; assume a mid-tempo track.\n')+`Style sliders: ${sl}\nInclude: ${$('inc').value||'none'}\nAvoid: ${$('avd').value||'none'}\nRules: lyrics must be singable (short phrases, max ~9 words per line), chorus repetitive and catchy.`}
 async function generate(){if(!S.struct.length){toast('Pick at least one section.');return}const mode=$('mode').value,imp=$('imp').value.trim();
@@ -272,7 +267,7 @@ const u=document.createElement('button');u.className='btn out sm';u.textContent=
 async function titles(){const b=$('tb');b.disabled=true;try{const r=await ai(`Suggest 10 song titles.\n${ctx()}\nLyrics:\n${lyr()}\nReturn ONLY JSON: {"titles":["..."]}`);$('tl').innerHTML='';(r.titles||[]).slice(0,10).forEach(t=>{const c=document.createElement('button');c.className='chip';c.textContent=String(t);c.onclick=()=>{S.title=c.textContent;$('title').value=S.title;$('et').textContent=S.title;toast('Title applied')};$('tl').appendChild(c)})}catch(e){aerr(e)}b.disabled=false}
 function copyL(){const t=lyr();(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>toast('Lyrics copied')).catch(()=>{const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');toast('Lyrics copied')}catch(e){toast('Copy failed')}ta.remove()})}
 async function dl(k){if(!S.sections.length){toast('Nothing to export yet.');return}const name=(S.title||'song').replace(/[^\w-]+/g,'_');const data=k=='txt'?`${S.title||'Untitled'}\n\n${lyr()}\n`:JSON.stringify(snap(),null,2);
-try{const d=await claude.use('downloads');if(!d)throw 0;await d.save({filename:`${name}.${k}`,data});}catch(e){if(e&&e.code=='cancelled')return;toast('Download unavailable here. Use Copy Lyrics instead.')}}
+const bl=new Blob([data],{type:'text/plain'}),an=document.createElement('a');an.href=URL.createObjectURL(bl);an.download=`${name}.${k}`;document.body.appendChild(an);an.click();an.remove()}
 function snap(){return{id:S.id,title:$('title').value||S.title,genres:[...S.genres],mood:$('mood').value,lang:$('lang').value,bpm:(S.audio.beat||{}).bpm||null,dur:(S.audio.beat||S.audio.vocal||{}).dur||null,sections:S.sections.map(s=>({...s})),versions:S.versions,updated:Date.now()}}
 function saveV(auto){S.versions.push({t:Date.now(),title:S.title,sections:S.sections.map(s=>({...s}))});S.versions=S.versions.slice(-20);saveP();renderVers();if(!auto)toast('Version saved')}
 function renderVers(){const el=$('vers');if(!S.versions.length){el.innerHTML='<p>No saved versions.</p>';return}el.innerHTML='';S.versions.forEach((v,i)=>{const d=document.createElement('div');d.className='proj sug';d.innerHTML=`<span>Version ${i+1} · ${new Date(v.t).toLocaleString()}</span>`;const b=document.createElement('button');b.className='btn out sm';b.textContent='Restore';b.onclick=()=>{S.sections=v.sections.map(s=>({...s}));renderSecs();toast('Version restored')};d.appendChild(b);el.appendChild(d)})}
@@ -288,28 +283,4 @@ $('pp').onclick=()=>{const b=S.audio.beat;if(!b)return;if(b.el.paused){b.el.play
 $('vol').oninput=e=>{if(S.audio.beat)S.audio.beat.el.volume=e.target.value};$('spd').onchange=e=>{if(S.audio.beat)S.audio.beat.el.playbackRate=+e.target.value};
 $('pc').onclick=e=>{const b=S.audio.beat;if(!b)return;const r=$('pc').getBoundingClientRect();b.el.currentTime=(e.clientX-r.left)/r.width*b.dur;tick()};
 $('title').oninput=e=>{S.title=e.target.value};
-</script><!--
-EMAIL WORKER (separate server file, not part of the page). Save the code below as worker.js and deploy it on Cloudflare Workers, then paste its URL into NOTIFY_URL in the script above.
-
-// STARLYR payment-alert email worker (Cloudflare Workers + Resend)
-// Env vars: RESEND_API_KEY (secret), OWNER_EMAIL=oluwatimileyinaji@gmail.com,
-// APP_URL=<your STARLYR page URL>, ALLOWED_ORIGIN=<your site origin>, FROM (optional)
-export default{async fetch(req,env){
-const cors={'Access-Control-Allow-Origin':env.ALLOWED_ORIGIN||'*','Access-Control-Allow-Headers':'content-type','Access-Control-Allow-Methods':'POST,OPTIONS'};
-if(req.method==='OPTIONS')return new Response(null,{headers:cors});
-if(req.method!=='POST')return new Response('Method not allowed',{status:405,headers:cors});
-let b;try{b=await req.json()}catch{return new Response('Bad request',{status:400,headers:cors})}
-const c=s=>String(s||'').replace(/[<>&"'`]/g,'').slice(0,80);
-const name=c(b.name),ref=c(b.ref),credits=Number(b.credits)|0,amount=Number(b.amount)|0;
-if(!name||credits<1||credits>10000)return new Response('Invalid',{status:400,headers:cors});
-const link=env.APP_URL+(b.id?'?review='+encodeURIComponent(c(b.id)):'');
-const html=`<div style="font-family:Arial,sans-serif;max-width:480px"><h2 style="color:#a9741f">New STARLYR credit request</h2>
-<p><b>Name:</b> ${name}<br><b>Credits ordered:</b> ${credits}<br><b>Amount to confirm:</b> &#8358;${amount}<br><b>Reference:</b> ${ref}</p>
-<p>Check Access Bank for this amount with this reference, then verify:</p>
-<p><a href="${link}" style="background:#a9741f;color:#fff;padding:12px 20px;border-radius:6px;text-decoration:none;font-weight:bold">Verify payment</a></p></div>`;
-const r=await fetch('https://api.resend.com/emails',{method:'POST',headers:{Authorization:'Bearer '+env.RESEND_API_KEY,'content-type':'application/json'},
-body:JSON.stringify({from:env.FROM||'STARLYR <onboarding@resend.dev>',to:[env.OWNER_EMAIL],subject:`STARLYR: ${name} ordered ${credits} credits`,html})});
-return new Response(JSON.stringify({ok:r.ok}),{status:r.ok?200:502,headers:{...cors,'content-type':'application/json'}})}}
-
--->
-</body></html>
+</script></body></html>
