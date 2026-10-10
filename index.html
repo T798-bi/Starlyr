@@ -65,9 +65,14 @@ textarea{min-height:70px;resize:vertical}input[type=range]{width:100%;accent-col
 .pill{background:var(--card);border:1px solid var(--gold);border-radius:20px;padding:4px 12px;font-weight:600;font-size:13px;margin-right:6px;cursor:pointer;color:var(--ink)}
 .modal{position:fixed;inset:0;background:rgba(30,18,5,.6);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}.modal .card{max-width:440px;width:100%;max-height:90vh;overflow:auto;background:var(--bg)}
 .bank{background:#fffaf0;border:1px solid var(--gold);border-radius:8px;padding:4px 14px;margin:12px 0}.br{display:grid;grid-template-columns:92px 1fr auto;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}.bl{color:var(--mut);font-size:12px;text-transform:uppercase;letter-spacing:.08em}.bv{font-weight:600;font-size:17px;letter-spacing:.04em;word-break:break-all;user-select:all;-webkit-user-select:all}
+.big2{font-family:Fraunces,serif;font-size:36px;font-weight:800;margin:2px 0 6px}
+.peach{background:#f6e6c6;color:#7a4e12;border-radius:14px;padding:16px;font-size:17px;margin:14px 0}
+.bankcard{background:#f3ead6;border-radius:14px;padding:18px;margin:12px 0}.bankcard .bn{font-weight:700;font-size:18px}.bankcard .acn{font-size:32px;font-weight:700;color:var(--gold);letter-spacing:.04em;margin:6px 0}
+.bankcard small{color:var(--mut);display:block;margin-top:8px}.muted{color:var(--mut);font-size:13px;margin:10px 0}
+input[type=number]{width:100%;background:#fffaf0;border:1px solid var(--line);border-radius:6px;padding:9px 10px;font:inherit;color:var(--ink)}
 </style></head><body>
 <nav><div class="wrap"><a class="logo" href="#" onclick="go('land');return false">STAR<b>LYR</b></a>
-<div style="display:flex;align-items:center"><span class="pill" id="crp" onclick="openBuy()">Credits: …</span><a class="btn ghost sm" href="#features" onclick="go('land')" style="text-decoration:none;margin-right:6px">Features</a><button class="btn sm" onclick="go('app')">Start Creating</button></div></div></nav>
+<div style="display:flex;align-items:center"><a class="btn ghost sm" href="#features" onclick="go('land')" style="text-decoration:none;margin-right:6px">Features</a><button class="btn sm" onclick="go('app')">Start Creating</button></div></div></nav>
 
 <div id="land">
 <div class="hero"><div class="wrap"><div class="eyebrow">AI songwriting studio</div>
@@ -88,26 +93,24 @@ textarea{min-height:70px;resize:vertical}input[type=range]{width:100%;accent-col
 <section class="s alt"><div class="wrap"><div class="eyebrow">Built for African music</div><h2>Supported genres &amp; languages</h2>
 <div class="chips" id="gl"></div><p style="color:var(--mut);margin-top:16px">English, Nigerian Pidgin, Yoruba, Igbo, Hausa — and natural mixes like English + Pidgin or Pidgin + Yoruba, written the way people actually talk.</p></div></section>
 
-<section class="s"><div class="wrap"><div class="eyebrow">Pricing</div><h2>Simple plans</h2>
-<div class="price"><div class="card"><h3>Free</h3><div class="big">$0</div><ul><li><b>50 free starter credits</b> on signup</li><li>3 credits per full lyric, 1 per section edit, hook or title</li><li>Beat-aware &amp; vocal-aware modes</li></ul></div>
-<div class="card" style="border-color:var(--gold)"><h3>Top-up credits</h3><div class="big">₦300 <small style="font-size:15px">/ 100 credits</small></div><ul><li>Pay by bank transfer</li><li>Buy in packs of 100</li><li>Credits never expire</li></ul><button class="btn" style="margin-top:10px" onclick="go('app');openBuy()">Buy credits</button></div></div>
-<div class="note">Pay by bank transfer, tap &quot;I have paid&quot;, and the owner confirms the transfer. Your credits are then added to your account automatically.</div></div></section>
+
 
 <section class="s alt"><div class="wrap"><div class="eyebrow">FAQ</div><h2>Questions</h2>
-<details><summary>Does it really analyze my audio?</summary><p>Yes, in your browser: duration, a tempo estimate from the beat's pulse, energy level and the waveform. Key and section detection need a server-side audio service, so they are marked as unavailable rather than guessed.</p></details>
+<details><summary>Does it really analyze my audio?</summary><p>Yes. It reads your track's duration, estimates the tempo (BPM), measures energy and loudness, and draws the waveform.</p></details>
 <details><summary>Is my audio uploaded anywhere?</summary><p>No. Audio is decoded in your browser and never uploaded. Only the lyric prompt is sent to the AI.</p></details>
 <details><summary>Can it write in Yoruba, Igbo, Hausa and Pidgin?</summary><p>Yes. Choose a language or a mix, and use the slang and Pidgin sliders to tune how local it sounds.</p></details>
-<details><summary>What about PDF / DOCX export and accounts?</summary><p>Those require a backend. This version exports TXT and a project file, and keeps projects privately in your own browser.</p></details></div></section>
+<details><summary>How do I export my lyrics?</summary><p>Copy them, download a TXT file, or download the whole project file from the Lyric Editor.</p></details></div></section>
 </div>
 
 <div id="app"><div class="wrap">
+<div id="eb" class="note" role="alert" style="display:none;border-left-color:#b23b3b;background:#f6dede;margin-top:12px"><span id="em"></span> <button class="btn sm" id="er" onclick="ERR_RETRY&&ERR_RETRY()" style="margin-left:6px">Retry</button> <button class="btn ghost sm" onclick="hideErr()">Dismiss</button></div>
 <div class="tabs" id="tabs"></div>
 
 <div class="pane on" id="p-create">
 <h2>Create Your Song</h2>
 <div class="two" id="ups"></div>
 <div class="card" id="an" style="margin-top:14px"><h3>Audio Analysis</h3><p id="anm">Upload a beat or vocal to see its analysis.</p><div class="stat" id="ast"></div>
-<div class="note">Key and section detection are not performed in this build — they need a backend audio-analysis service.</div></div>
+</div>
 <div class="card" style="margin-top:14px"><h3>Song Information</h3>
 <div class="two"><div><label>Song title</label><input type="text" id="title" placeholder="Untitled"></div>
 <div><label>Mode</label><select id="mode"><option value="beat">Write To My Beat</option><option value="vocal">Write Around My Vocal</option><option value="replace">Replace Words Only</option><option value="improve">Improve My Lyrics</option></select></div></div>
@@ -119,7 +122,7 @@ textarea{min-height:70px;resize:vertical}input[type=range]{width:100%;accent-col
 <div class="sl" id="sliders"></div>
 <div class="two"><div><label>Words or phrases to include</label><textarea id="inc"></textarea></div><div><label>Words/topics to avoid</label><textarea id="avd"></textarea></div></div>
 <div id="impBox" style="display:none"><label>Your existing lyrics / vocal transcript</label><textarea id="imp" style="min-height:120px"></textarea></div>
-<div style="margin-top:16px"><button class="btn" id="gen" style="width:100%;padding:14px;font-size:17px" onclick="generate()">Generate Lyrics · 3 credits</button><div style="text-align:center;color:var(--mut);font-size:12px;margin-top:6px">Section edits, hooks and titles cost 1 credit each.</div></div></div></div>
+<div style="margin-top:16px"><button class="btn" id="gen" style="width:100%;padding:14px;font-size:17px" onclick="generate()">Generate Lyrics</button></div></div></div>
 
 <div class="pane" id="p-edit"><div class="edgrid"><div><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px"><h2 id="et">Lyric Editor</h2><div class="chips"><button class="btn out sm" onclick="copyL()">Copy Lyrics</button><button class="btn out sm" onclick="dl('txt')">TXT</button><button class="btn out sm" onclick="dl('json')">Download Project</button><button class="btn sm" onclick="saveV()">Save Version</button></div></div>
 <div id="secs"><div class="note">No lyrics yet. Use Generate Lyrics on the Create tab.</div></div>
@@ -134,23 +137,12 @@ textarea{min-height:70px;resize:vertical}input[type=range]{width:100%;accent-col
 <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><button class="btn sm" id="pp">Play</button><span id="ts">0:00 / 0:00</span>
 <label style="margin:0">Vol <input type="range" id="vol" min="0" max="1" step=".05" value=".8" style="width:90px"></label>
 <label style="margin:0">Speed <select id="spd" style="width:auto"><option>0.75</option><option selected>1</option><option>1.25</option><option>1.5</option></select></label></div>
-<div class="note">Section highlighting divides the track evenly across your sections — an approximation, since section timing detection is not available.</div>
+<div class="note">Lyrics highlight as the track plays, spread evenly across your sections.</div>
 <div class="lyr" id="pl"></div></div></div>
 
 <div class="pane" id="p-lib"><h2>Projects</h2><div class="note">Projects are stored privately in this browser. Audio files are not stored — re-upload when you reopen a project.</div><div id="lib"></div><div id="adm"></div></div>
 </div></div>
 
-<div class="modal" id="am"><div class="card"><h3>Log in or sign up</h3><p>New accounts get 50 free credits.</p><label>Email</label><input type="text" id="ae1" autocomplete="email"><label>Password (8+ characters)</label><input type="password" id="ap" autocomplete="current-password"><div id="ae" style="color:#a32;font-size:13px;margin-top:6px"></div><div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap"><button class="btn" onclick="authGo('login')">Log in</button><button class="btn out" onclick="authGo('signup')">Sign up</button><button class="btn ghost" onclick="$('am').style.display='none'">Close</button></div></div></div>
-<div class="modal" id="bm"><div class="card"><h3>Buy credits</h3><p>₦300 = 100 credits. Your balance: <b id="bal2"></b></p>
-<label>Packs of 100 credits</label><select id="packs" onchange="amt()"><option value="1">1 pack · 100 credits · ₦300</option><option value="2">2 packs · 200 credits · ₦600</option><option value="5">5 packs · 500 credits · ₦1,500</option><option value="10">10 packs · 1,000 credits · ₦3,000</option></select>
-<div class="bank">
-<div class="br"><span class="bl">Bank</span><span class="bv" id="bk">Access Bank</span><button class="btn out sm" onclick="cp('Access Bank')">Copy</button></div>
-<div class="br"><span class="bl">Account no.</span><span class="bv" id="ac">1920028778</span><button class="btn out sm" onclick="cp('1920028778')">Copy</button></div>
-<div class="br"><span class="bl">Reference</span><span class="bv" id="ref"></span><button class="btn out sm" onclick="cp($('ref').textContent)">Copy</button></div>
-<div class="br" style="border:0"><span class="bl">Amount</span><span class="bv" id="amt">₦300</span><button class="btn out sm" onclick="cp($('amt').textContent.replace(/[^0-9]/g,''))">Copy</button></div></div>
-<label>Your name</label><input type="text" id="pn" maxlength="60" placeholder="Full name">
-<div class="note">1) Make the transfer with the reference. 2) Tap "I have paid". 3) The owner confirms the transfer and adds your credits. Credits are not added automatically.</div>
-<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" id="paid" onclick="paid()">I have paid</button><button class="btn ghost" onclick="$('bm').style.display='none'">Close</button><button class="btn ghost" onclick="logout()">Log out</button></div><div id="pst" style="margin-top:8px;font-size:13px"></div></div></div>
 <footer>© <span id="yr"></span> STARLYR · <b>TYMSTAR</b></footer><div id="toast"></div>
 
 <script>
@@ -206,47 +198,31 @@ let bpm=bl;const dB=20*Math.log10(Math.max(rms,1e-5));const energy=rms>.18?'High
 function draw(cv,pk,p){const w=cv.width=cv.clientWidth*2,h=cv.height=140,c=cv.getContext('2d');c.clearRect(0,0,w,h);const mx=Math.max(...pk)||1,bw=w/pk.length;
 pk.forEach((v,i)=>{c.fillStyle=i/pk.length<p?'#a9741f':'#c9a96a';const bh=Math.max(2,v/mx*h*.9);c.fillRect(i*bw,(h-bh)/2,bw*.7,bh)})}
 function showAn(){const b=S.audio.beat,v=S.audio.vocal,a=b||v;if(!a){$('anm').style.display='';$('ast').innerHTML='';return}
-$('anm').style.display='none';$('ast').innerHTML=[['Source',b&&v?'Beat + Vocal':b?'Beat only':'Vocal only'],['BPM (estimate)',a.bpm],['Duration',fmt(a.dur)],['Energy',a.energy],['Loudness',a.loud],['Key','Needs backend']].map(x=>`<div><small>${x[0]}</small><b>${x[1]}</b></div>`).join('')}
+$('anm').style.display='none';$('ast').innerHTML=[['Source',b&&v?'Beat + Vocal':b?'Beat only':'Vocal only'],['BPM (estimate)',a.bpm],['Duration',fmt(a.dur)],['Energy',a.energy],['Loudness',a.loud],['Key','Not detected']].map(x=>`<div><small>${x[0]}</small><b>${x[1]}</b></div>`).join('')}
 
 // AI
-const CR={tok:ls('slx_tok'),email:ls('slx_em'),credits:null};let LAST=null;
-const bal=()=>CR.credits;
-function pill(){$('crp').textContent=CR.tok?'Credits: '+(CR.credits==null?'…':CR.credits):'Log in';$('bal2').textContent=CR.credits==null?'…':CR.credits}
+let ERR_RETRY=null;
 $('mq').textContent=Array(2).fill(GEN.join('  ·  ')+'  ·  Pidgin  ·  Yoruba  ·  Igbo  ·  Hausa  ·  ').join('');
-async function api(path,body){const r=await fetch('/api/'+path,{method:body?'POST':'GET',headers:{'content-type':'application/json',...(CR.tok?{Authorization:'Bearer '+CR.tok}:{})},body:body?JSON.stringify(body):undefined});let j={};try{j=await r.json()}catch(e){}
-if(r.status==401&&CR.tok&&path!='auth')logout(true);if(!r.ok)throw{code:r.status==402?'nocredit':r.status==401?'auth':r.status==429?'rate_limited':'fail',message:j.error};return j}
-async function refresh(){if(!CR.tok){pill();return}try{const j=await api('me');CR.credits=j.credits;LAST=(j.requests||[])[0]||null;pill()}catch(e){}}
-function logout(q){CR.tok=null;CR.email=null;CR.credits=null;LAST=null;ls('slx_tok',null);ls('slx_em',null);pill();$('bm').style.display='none';if(!q)toast('Logged out')}
-function openAuth(){$('ae').textContent='';$('am').style.display='flex'}
-async function authGo(a){$('ae').textContent='';try{const j=await api('auth',{action:a,email:$('ae1').value,password:$('ap').value});CR.tok=j.token;CR.email=j.email;ls('slx_tok',j.token);ls('slx_em',j.email);$('am').style.display='none';$('ap').value='';await refresh();toast(a=='signup'?'Account created. 50 free credits added.':'Logged in')}catch(x){$('ae').textContent=x.message||'Something went wrong. Try again.'}}
-function cp(t){const f=()=>{const x=document.createElement('textarea');x.value=t;x.style.position='fixed';x.style.opacity='0';document.body.appendChild(x);x.select();try{document.execCommand('copy');toast('Copied: '+t)}catch(e){toast('Press and hold the text to copy')}x.remove()};(navigator.clipboard?navigator.clipboard.writeText(t).then(()=>toast('Copied: '+t)).catch(f):f())}
-function amt(){$('amt').textContent='₦'+(+$('packs').value*300)}
-function openBuy(){if(!CR.tok){openAuth();return}amt();refresh().then(()=>{if(LAST&&LAST.status=='pending')showSt(LAST,'pending')});$('ref').textContent='STX-'+Math.random().toString(36).slice(2,8).toUpperCase();$('pst').innerHTML='';$('bm').style.display='flex'}
-function showSt(r,s){const e=$('pst');e.innerHTML='';const d=document.createElement('div');d.className='note';
-const m={pending:['⏳ Pending verification','Request sent to the owner. Your '+r.credits+' credits are added as soon as the transfer is confirmed.'],approved:['✅ Payment successful',r.credits+' credits have been added to your balance.'],rejected:['❌ Payment unsuccessful','The transfer could not be confirmed. Check the reference and amount, then contact the owner.']}[s];
-d.innerHTML='<b></b><br><span></span>';d.firstChild.textContent=m[0];d.lastChild.textContent=m[1]+' Ref: '+r.ref;e.appendChild(d);
-if(s=='pending'){const b=document.createElement('button');b.className='btn out sm';b.style.marginTop='6px';b.textContent='Check status';b.onclick=checkSt;e.appendChild(b)}}
-async function checkSt(){await refresh();if(!LAST)return;if(LAST.status=='approved'||LAST.status=='rejected')showSt(LAST,LAST.status);else toast('Still pending verification.')}
-async function paid(){const pn=$('pn').value.trim().slice(0,60);if(!pn){toast('Enter your full name.');return}$('paid').disabled=true;
-try{const r=await api('pay',{name:pn,packs:+$('packs').value,ref:$('ref').textContent});LAST=r.request;showSt(r.request,'pending')}catch(e){toast(e.message||'Could not send. Try again.')}$('paid').disabled=false}
-async function ai(prompt,cost=1){if(!CR.tok){openAuth();throw{code:'auth'}}const j=await api('ai',{prompt,kind:cost==3?'lyrics':'edit'});CR.credits=j.credits;pill();
-let t=(j.text||'').trim();const a=t.indexOf('{'),z=t.lastIndexOf('}');return JSON.parse(t.slice(a,z+1))}
-function aerr(e){if(e&&e.code=='auth')return;if(e&&e.code=='nocredit'){toast('Not enough credits. Top up to continue.');openBuy();return}toast(e&&e.code=='rate_limited'?'Too many requests. Wait a moment and try again.':e&&e.message?e.message:'The AI returned something unreadable. Please try again.')}
-refresh();
+async function ai(prompt,cost,expect){let r;try{r=await fetch('/api/ai',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({prompt,expect})})}catch(e){throw{message:'Could not reach the server. Check your connection and retry.'}}
+ let j={};try{j=await r.json()}catch(e){}
+ if(!r.ok)throw{code:j.code,message:j.error||(r.status==404?'The AI endpoint was not found. Make sure the api folder is deployed.':'Server error ('+r.status+'). Please try again shortly.')};return j.data}
+function showErr(m,retry){$('eb').style.display='block';$('em').textContent=m;ERR_RETRY=retry||null;$('er').style.display=retry?'inline-block':'none';scrollTo(0,0)}
+function hideErr(){$('eb').style.display='none';ERR_RETRY=null}
+function aerr(e,retry){showErr((e&&e.message)||'The AI request failed. Please try again.',retry)}
 function ctx(){const a=S.audio.beat||S.audio.vocal;const sl=Object.entries(S.sl).map(([k,v])=>`${k}: ${v}/100`).join(', ');
 return`Song title: ${$('title').value||'Untitled'}\nTheme: ${$('theme').value}\nMood: ${$('mood').value}\nGenres: ${S.genres.join(', ')||'any'}\nLanguage: ${$('lang').value} (write naturally like a native Nigerian songwriter, never literal translations)\n`+(a?`Audio: about ${a.bpm} BPM (estimate), ${fmt(a.dur)} long, energy ${a.energy}. Fit line length and density to this tempo and length.\n`:'No audio uploaded; assume a mid-tempo track.\n')+`Style sliders: ${sl}\nInclude: ${$('inc').value||'none'}\nAvoid: ${$('avd').value||'none'}\nRules: lyrics must be singable (short phrases, max ~9 words per line), chorus repetitive and catchy.`}
 async function generate(){if(!S.struct.length){toast('Pick at least one section.');return}const mode=$('mode').value,imp=$('imp').value.trim();
 if(mode=='improve'&&!imp){toast('Paste your lyrics to improve.');return}if(mode!='improve'&&!$('theme').value.trim()&&!imp){toast('Tell the song what to say.');return}
 if(mode=='vocal'&&!S.audio.vocal){toast('Upload a vocal to use Write Around My Vocal.');return}
-const keep=S.sections.filter(s=>s.locked);$('gen').disabled=true;$('gen').textContent='Writing…';
+hideErr();const keep=S.sections.filter(s=>s.locked);$('gen').disabled=true;$('gen').textContent='Writing…';
 try{const task={beat:'Write original lyrics to fit the beat.',vocal:'Write lyrics that follow the vocal phrase lengths and pauses; syllable counts should be consistent per phrase.',replace:'Replace the words of the pasted lyrics with new content but keep the same rhythm and syllable counts per line.',improve:'Improve the pasted lyrics (flow, rhymes, meaning, catchiness, grammar, emotion) without changing the core idea.'}[mode];
-const r=await ai(`${task}\n${ctx()}\n${imp?'Existing lyrics:\n'+imp+'\n':''}Sections in order: ${S.struct.join(', ')}.\nReturn ONLY JSON: {"sections":[{"name":"Verse 1","lines":["line","line"]}]}`,3);
+const r=await ai(`${task}\n${ctx()}\n${imp?'Existing lyrics:\n'+imp+'\n':''}Sections in order: ${S.struct.join(', ')}.\nReturn ONLY JSON: {"sections":[{"name":"Verse 1","lines":["line","line"]}]}`,3,'sections');
 const ns=(r.sections||[]).map(x=>({name:String(x.name),text:(x.lines||[]).join('\n'),locked:false}));if(!ns.length)throw{};
 S.sections=ns.map(n=>{const k=keep.find(l=>l.name==n.name);return k||n});S.title=$('title').value;renderSecs();saveV(true);tab('edit')}
-catch(e){aerr(e)}$('gen').disabled=false;$('gen').textContent='Generate Lyrics · 3 credits'}
+catch(e){aerr(e,generate)}$('gen').disabled=false;$('gen').textContent='Generate Lyrics'}
 const ACT={regen:'Write a fresh version of this section.',rewrite:'Rewrite every line with the same meaning but better wording.',shorten:'Shorten the lines so they are easier to sing, keep the meaning.',rhyme:'Improve the rhyme scheme so lines rhyme naturally.',improve:'Improve flow, emotion and catchiness without changing the idea.'};
-async function secAct(i,a,btn){const s=S.sections[i];if(s.locked){toast('This section is locked.');return}const old=btn.textContent;btn.disabled=true;btn.textContent='…';
-try{const r=await ai(`${ACT[a]}\n${ctx()}\nSection: ${s.name}\nCurrent lines:\n${s.text}\nFull song for context:\n${lyr()}\nReturn ONLY JSON: {"lines":["..."]}`);if(!r.lines||!r.lines.length)throw{};s.text=r.lines.join('\n');renderSecs()}catch(e){aerr(e);btn.disabled=false;btn.textContent=old}}
+async function secAct(i,a,btn){const s=S.sections[i];if(s.locked){toast('This section is locked.');return}hideErr();const old=btn.textContent;btn.disabled=true;btn.textContent='…';
+try{const r=await ai(`${ACT[a]}\n${ctx()}\nSection: ${s.name}\nCurrent lines:\n${s.text}\nFull song for context:\n${lyr()}\nReturn ONLY JSON: {"lines":["..."]}`,1,'lines');if(!r.lines||!r.lines.length)throw{};s.text=r.lines.join('\n');renderSecs()}catch(e){aerr(e,()=>secAct(i,a,btn));btn.disabled=false;btn.textContent=old}}
 function renderSecs(){const c=$('secs');if(!S.sections.length){c.innerHTML='<div class="note">No lyrics yet. Use Generate Lyrics on the Create tab.</div>';sugs();return}c.innerHTML='';$('et').textContent=S.title||$('title').value||'Lyric Editor';
 S.sections.forEach((s,i)=>{const d=document.createElement('div');d.className='sec'+(s.locked?' lock':'');d.innerHTML=`<header><h3>[${esc(s.name.toUpperCase())}]</h3><div class="acts">${['regen:Regenerate','rewrite:Rewrite','shorten:Shorten','rhyme:Rhyme','improve:Improve'].map(x=>`<button class="btn out sm" data-a="${x.split(':')[0]}">${x.split(':')[1]}</button>`).join('')}<button class="btn sm ${s.locked?'':'ghost'}" data-l="1">${s.locked?'Locked':'Lock'}</button><button class="btn ghost sm" data-d="1">✕</button></div></header><textarea ${s.locked?'readonly':''}></textarea>`;
 const ta=d.querySelector('textarea');ta.value=s.text;ta.oninput=()=>{s.text=ta.value;sugs()};
@@ -261,10 +237,10 @@ const ch=S.sections.find(s=>/chorus/i.test(s.name));if(ch){const ls=ch.text.spli
 if(!out.length)out.push(['No issues found by the local checks. Try the Hook Generator for stronger chorus ideas.']);
 el.innerHTML='';out.forEach(o=>{const d=document.createElement('div');d.className='sug';d.textContent=o[0];if(o[2]){const b=document.createElement('button');b.className='btn out sm';b.textContent=o[3];b.onclick=()=>secAct(o[1],o[2],b);d.appendChild(document.createElement('br'));d.appendChild(b)}el.appendChild(d)})}
 function bpmTxt(){const a=S.audio.beat;return a?` at ~${a.bpm} BPM`:''}
-async function hooks(){const b=$('hb2');b.disabled=true;b.textContent='Writing…';try{const r=await ai(`Write 4 different chorus/hook options (4 lines each).\n${ctx()}\nScore each 1-10 for catchiness, rhyme and simplicity (your honest estimates).\nReturn ONLY JSON: {"hooks":[{"lines":["..."],"catchiness":8,"rhyme":7,"simplicity":9}]}`);
+async function hooks(){hideErr();const b=$('hb2');b.disabled=true;b.textContent='Writing…';try{const r=await ai(`Write 4 different chorus/hook options (4 lines each).\n${ctx()}\nScore each 1-10 for catchiness, rhyme and simplicity (your honest estimates).\nReturn ONLY JSON: {"hooks":[{"lines":["..."],"catchiness":8,"rhyme":7,"simplicity":9}]}`,1,'hooks');
 $('hk').innerHTML='';(r.hooks||[]).forEach(h=>{const d=document.createElement('div');d.className='sug';const t=document.createElement('div');t.className='hook';t.textContent=(h.lines||[]).join('\n');d.appendChild(t);const sc=document.createElement('div');sc.className='sc';sc.textContent=`Catchy ${h.catchiness} · Rhyme ${h.rhyme} · Simple ${h.simplicity} (AI-estimated)`;d.appendChild(sc);
-const u=document.createElement('button');u.className='btn out sm';u.textContent='Use Hook';u.onclick=()=>{const c=S.sections.find(s=>/chorus/i.test(s.name)&&!s.locked);const tx=(h.lines||[]).join('\n');if(c)c.text=tx;else S.sections.push({name:'Chorus',text:tx,locked:false});renderSecs();toast('Hook applied')};d.appendChild(u);$('hk').appendChild(d)})}catch(e){aerr(e)}b.disabled=false;b.textContent='Generate Hook'}
-async function titles(){const b=$('tb');b.disabled=true;try{const r=await ai(`Suggest 10 song titles.\n${ctx()}\nLyrics:\n${lyr()}\nReturn ONLY JSON: {"titles":["..."]}`);$('tl').innerHTML='';(r.titles||[]).slice(0,10).forEach(t=>{const c=document.createElement('button');c.className='chip';c.textContent=String(t);c.onclick=()=>{S.title=c.textContent;$('title').value=S.title;$('et').textContent=S.title;toast('Title applied')};$('tl').appendChild(c)})}catch(e){aerr(e)}b.disabled=false}
+const u=document.createElement('button');u.className='btn out sm';u.textContent='Use Hook';u.onclick=()=>{const c=S.sections.find(s=>/chorus/i.test(s.name)&&!s.locked);const tx=(h.lines||[]).join('\n');if(c)c.text=tx;else S.sections.push({name:'Chorus',text:tx,locked:false});renderSecs();toast('Hook applied')};d.appendChild(u);$('hk').appendChild(d)})}catch(e){aerr(e,hooks)}b.disabled=false;b.textContent='Generate Hook'}
+async function titles(){hideErr();const b=$('tb');b.disabled=true;b.textContent='Writing…';try{const r=await ai(`Suggest 10 song titles.\n${ctx()}\nLyrics:\n${lyr()}\nReturn ONLY JSON: {"titles":["..."]}`,1,'titles');$('tl').innerHTML='';(r.titles||[]).slice(0,10).forEach(t=>{const c=document.createElement('button');c.className='chip';c.textContent=String(t);c.onclick=()=>{S.title=c.textContent;$('title').value=S.title;$('et').textContent=S.title;toast('Title applied')};$('tl').appendChild(c)})}catch(e){aerr(e,titles)}b.disabled=false;b.textContent='Suggest 10 titles'}
 function copyL(){const t=lyr();(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>toast('Lyrics copied')).catch(()=>{const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');toast('Lyrics copied')}catch(e){toast('Copy failed')}ta.remove()})}
 async function dl(k){if(!S.sections.length){toast('Nothing to export yet.');return}const name=(S.title||'song').replace(/[^\w-]+/g,'_');const data=k=='txt'?`${S.title||'Untitled'}\n\n${lyr()}\n`:JSON.stringify(snap(),null,2);
 const bl=new Blob([data],{type:'text/plain'}),an=document.createElement('a');an.href=URL.createObjectURL(bl);an.download=`${name}.${k}`;document.body.appendChild(an);an.click();an.remove()}
